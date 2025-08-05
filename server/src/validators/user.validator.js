@@ -1,13 +1,10 @@
 const Joi = require('joi');
-const { objectId } = require('./reusable.validator');
+const { email, password } = require('./reusable.validator');
+const ROLES = require("../constants/roles.const");
 
 // Reusable validators
 const name = Joi.string().trim().min(2).max(50);
-const email = Joi.string().email().trim().lowercase().min(5).max(100);
-const password = Joi.string().trim().min(6);
-const role = Joi.string().valid('admin', 'user');
-const createdBy = objectId.optional();
-const updatedBy = objectId.optional();
+const role = Joi.string().valid(...ROLES);
 
 // Create Validator
 const validateCreateUser = (data) => {

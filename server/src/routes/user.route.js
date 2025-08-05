@@ -13,32 +13,32 @@ const router = express.Router();
 
 router.post(
     '/',
-    // [allowRoles('admin')],
+    [allowRoles('admin')],
     validateAndSanitize(validateCreateUser),
     asyncHandler(userController.createUser)
 );
 
 router.get(
     '/',
-    // [allowRoles('admin')],
+    [allowRoles('admin')],
     asyncHandler(userController.getAllUsers)
 );
 
 router.get(
     '/:id',
-    [/* allowRoles('admin'), */ isValidId],
+    [allowRoles('admin', "user"), isValidId],
     asyncHandler(userController.getUserById)
 );
 
 router.put(
     '/:id',
-    [/* allowRoles('admin'), */ isValidId, validateAndSanitize(validateUpdateUser)],
+    [allowRoles('admin', "user"), isValidId, validateAndSanitize(validateUpdateUser)],
     asyncHandler(userController.updateUser)
 );
 
 router.delete(
     '/:id',
-    [/* allowRoles('admin'), */ isValidId],
+    [allowRoles('admin'), isValidId],
     asyncHandler(userController.deleteUser)
 );
 

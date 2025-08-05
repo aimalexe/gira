@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
  * Internal helper to extract and validate user from token
  */
 const getAuthenticatedUser = async (req) => {
-    const authHeader = req.headers.authorization;
+    const authHeader = req.cookies.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer '))
         throw new Error('Authentication token missing. Login first');
@@ -46,9 +46,13 @@ const allowRoles = (...allowedRoles) => async (req, res, next) => {
         const user = await getAuthenticatedUser(req);
 
         if (allowedRoles.length && !allowedRoles.includes(user.role))
-            throw new Error(`Access denied for role: ${user.role}`);
+            return res.status(403).json({
+                success: false,
+                message: `Access denied for role: ${user.role}`
+            })
 
         req.user = user;
+        console.log("🚀 ~ allowRoles ~ req.user:", req.user)
         next();
     } catch (err) {
         next(err);

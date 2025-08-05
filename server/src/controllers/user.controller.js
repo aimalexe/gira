@@ -10,7 +10,7 @@ const createUser = async (req, res, next) => {
             });
         }
 
-        const user = new User({ ...req.validatedData, created_by: /* req?.user._id ?? */ null, updated_by: /* req?.user._id ?? */ null });
+        const user = new User({ ...req.validatedData, created_by: req?.user._id ?? null, updated_by: req?.user._id ?? null });
         await user.save();
         return res.status(201).json({
             status: 'success',
@@ -77,12 +77,12 @@ const getUserById = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
     try {
         const id = req.params.id;
-        /* if (req.user.role !== 'admin' && req.user._id.toString() !== id) {
+        if (req.user.role !== 'admin' && req.user._id.toString() !== id) {
             return res.status(403).json({
                 status: 'error',
                 message: 'Forbidden: Cannot delete other users'
             });
-        } */
+        }
 
         const user = await User.findById(id);
         if (!user) {
@@ -103,7 +103,7 @@ const updateUser = async (req, res, next) => {
 
         const updatedUser = await User.findByIdAndUpdate(
             id,
-            { ...req.validatedData, updated_by: /* req.user._id ?? */  null },
+            { ...req.validatedData, updated_by: req?.user._id ??  null },
             { new: true, runValidators: true }
         ).select('-password');
 
@@ -127,12 +127,12 @@ const deleteUser = async (req, res, next) => {
             });
         }
 
-        /* if (req.user.role !== 'admin' && req.user._id.toString() !== id) {
+        if (req.user.role !== 'admin' && req.user._id.toString() !== id) {
             return res.status(403).json({
                 status: 'error',
                 message: 'Forbidden: Cannot delete other users'
             });
-        } */
+        }
 
         const user = await User.findById(id);
         if (!user) {

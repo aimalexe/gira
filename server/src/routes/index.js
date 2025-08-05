@@ -1,6 +1,7 @@
 const userRoutes = require("./user.route")
-
+const authRoutes = require("./auth.route");
 const router = (app) => {
+    app.use("/api/auth", authRoutes)
     app.use("/api/user", userRoutes);
 
     // app.use("*", (req, res) => {
