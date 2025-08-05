@@ -38,7 +38,7 @@ router.put(
 
 router.delete(
     '/:id',
-    [allowRoles('admin'), isValidId],
+    [allowRoles('admin', "user"), isValidId],
     asyncHandler(userController.deleteUser)
 );
 

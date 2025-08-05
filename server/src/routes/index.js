@@ -1,8 +1,11 @@
 const userRoutes = require("./user.route")
 const authRoutes = require("./auth.route");
+const projectRoutes = require("./project.route");
+
 const router = (app) => {
     app.use("/api/auth", authRoutes)
     app.use("/api/user", userRoutes);
+    app.use("/api/project", projectRoutes)
 
     // app.use("*", (req, res) => {
     //     res.status(404).send("Endpoint not found!");
