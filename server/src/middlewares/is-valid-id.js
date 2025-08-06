@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const isValidId = (req, res, next) => {
-    const { id } = req.params;
-    const idToValidate = id;
+    const { id, projectId } = req.params;
+    const idToValidate = id || projectId;
 
     if (!mongoose.Types.ObjectId.isValid(idToValidate)) {
         return res.status(400).json({
