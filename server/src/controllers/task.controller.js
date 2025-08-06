@@ -63,7 +63,6 @@ const getAllTasks = async (req, res) => {
     const query = { project: projectId };
     if (assignedTo) {
         const user = await User.findById(assignedTo);
-        console.log("🚀 ~ getAllTasks ~ user:", user)
         if (!user) {
             return res.status(400).json({ status: 'error', message: 'Assigned user not found' });
         }

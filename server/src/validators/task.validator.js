@@ -14,7 +14,6 @@ const validateCreateTask = (data) => {
         description: description,
         status: status.default('To Do'),
         assigned_to: objectId.required(),
-        // created_by: objectId.required(),
         due_date: due_date.required(),
         file_attachment: file_attachment,
         project: objectId.required(),
