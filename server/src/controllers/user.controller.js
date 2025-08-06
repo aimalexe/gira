@@ -39,7 +39,7 @@ const getAllUsers = async (req, res, next) => {
             .select('-password')
             .skip((pageNo - 1) * itemsPerPage)
             .limit(parseInt(itemsPerPage));
-        const total = await User.countDocuments(query);
+            const total = await User.countDocuments(query);
 
         return res.status(200).json({
             status: 'success',

@@ -1,8 +1,11 @@
 import { UserWithUnderscoreId } from "./User.type";
 
 export interface Project {
-    _id: string;
+    Id: string;
     name: string;
     description?: string;
-    members?: Pick<UserWithUnderscoreId, "name" | "_id">[]
+    members?: {
+        Id: string;
+        name: string;
+    }[]
 }

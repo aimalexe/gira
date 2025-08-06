@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors')
 const connectDB = require('./configs/db.config');
 const { router } = require('./routes');
+const { convertSnakeToCamelMiddleware } = require('./middlewares/convert-snack-to-camel.middleware');
 
 const app = express();
 
@@ -27,6 +28,8 @@ const corsOptions = {
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions))
+app.use(convertSnakeToCamelMiddleware);
+
 connectDB();
 
 router(app)

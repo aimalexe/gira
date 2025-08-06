@@ -1,12 +1,12 @@
 "use client";
 
-import { User, UserWithUnderscoreId } from "@/types/User.type";
+import { User } from "@/types/User.type";
 import UserForm from "./UserForm";
 import { FormikHelpers } from "formik";
 import { UpdateUserSchema } from "@/validators/user.validator";
 
 interface UserListItemProps {
-    user: UserWithUnderscoreId;
+    user: User;
     editingUserId: string | null;
     setEditingUserId: (id: string | null) => void;
     handleUpdateUser: (values: any, actions: FormikHelpers<any>) => void;
@@ -20,7 +20,7 @@ export default function UserListItem({
     handleUpdateUser,
     handleDeleteUser,
 }: UserListItemProps) {
-    const isEditing = editingUserId === user._id;
+    const isEditing = editingUserId === user.Id;
 
     return (
         <div className="p-4 border rounded-md bg-gray-soft">
@@ -48,13 +48,13 @@ export default function UserListItem({
                     </div>
                     <div className="space-x-2">
                         <button
-                            onClick={() => setEditingUserId(user._id)}
+                            onClick={() => setEditingUserId(user.Id)}
                             className="p-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
                         >
                             Edit
                         </button>
                         <button
-                            onClick={() => handleDeleteUser(user._id)}
+                            onClick={() => handleDeleteUser(user.Id)}
                             className="p-2 bg-red-500 text-white rounded-md hover:bg-red-600"
                         >
                             Delete

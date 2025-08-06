@@ -1,8 +1,8 @@
 export interface User {
-    id: string;
+    Id: string;
     name?: string;
     email?: string;
     role: 'admin' | 'user';
 }
 
-export type UserWithUnderscoreId = Omit<User, 'id'> & { _id: string };
+// export type UserWithUnderscoreId = Omit<User, 'id'> & { _id: string };

@@ -14,7 +14,7 @@ export default function ProjectsPage() {
     const { user } = useAuthStore();
     const router = useRouter();
     const [projects, setProjects] = useState<Project[]>([]);
-    const [users, setUsers] = useState<{ _id: string; name: string }[]>([]);
+    const [users, setUsers] = useState<{ Id: string; name: string }[]>([]);
     const [error, setError] = useState('');
     const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
 
@@ -45,7 +45,7 @@ export default function ProjectsPage() {
     const fetchUsers = async () => {
         try {
             const response = await api.get('/user', { params: { limit: 100 } });
-            setUsers(response.data.users.map((u: any) => ({ _id: u._id, name: u.name })));
+            setUsers(response.data.users.map((u: any) => ({ Id: u.Id, name: u.name })));
         } catch (err: any) {
             console.log('Failed to fetch users:', err);
         }
@@ -55,6 +55,7 @@ export default function ProjectsPage() {
         values: { name: string; description: string; members: string[] },
         { setSubmitting, resetForm }: FormikHelpers<any>
     ) => {
+        console.log("🚀 ~ handleCreateProject ~ values:", values)
         if (user?.role !== 'admin') return; // Restrict create to admin
         try {
             await api.post('/project', values);
@@ -97,6 +98,7 @@ export default function ProjectsPage() {
     };
 
     const handleAddMember = async (projectId: string, memberId: string) => {
+        console.log("🚀 ~ handleAddMember ~ memberId:", memberId)
         if (user?.role !== 'admin') return; // Restrict add member to admin
         if (memberId) {
             try {
@@ -110,6 +112,7 @@ export default function ProjectsPage() {
     };
 
     const handleRemoveMember = async (projectId: string, memberId: string) => {
+        console.log("🚀 ~ handleRemoveMember ~ memberId:", memberId)
         if (user?.role !== 'admin') return; // Restrict remove member to admin
         if (memberId) {
             try {
@@ -127,7 +130,7 @@ export default function ProjectsPage() {
 
     return (
         <div className="max-w-4xl mx-auto mt-10 p-6 bg-gray-100 rounded-lg shadow-md">
-            <h1 className="text-3xl font-bold mb-6 text-center text-indigo-800">
+            <h1 className="text-3xl font-bold mb-6 text-center text-indigo-800 font-michroma">
                 Manage Projects
             </h1>
             {user.role === 'admin' && (
@@ -152,7 +155,7 @@ export default function ProjectsPage() {
             <div className="space-y-4">
                 {projects.map((project) => (
                     <ProjectListItem
-                        key={project._id}
+                        key={project.Id}
                         project={project}
                         editingProjectId={editingProjectId}
                         setEditingProjectId={setEditingProjectId}

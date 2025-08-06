@@ -9,12 +9,13 @@ import UserForm from '@/components/UserForm';
 import UserListItem from '@/components/UserListItem';
 import Pagination from '@/components/Pagination';
 import { CreateUserSchema, UpdateUserSchema } from '@/validators/user.validator'
-import { User, UserWithUnderscoreId } from '@/types/User.type';
+import { User } from '@/types/User.type';
 
 export default function UsersPage() {
     const { user } = useAuthStore();
     const router = useRouter();
-    const [users, setUsers] = useState<UserWithUnderscoreId[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
+    console.log("🚀 ~ UsersPage ~ users:", users)
     const [pagination, setPagination] = useState({ total: 0, pageNo: 1, limit: 5, itemsPerPage: 1 });
     const [error, setError] = useState('');
     const [editingUserId, setEditingUserId] = useState<string | null>(null);
@@ -84,7 +85,7 @@ export default function UsersPage() {
 
     return (
         <div className="max-w-4xl mx-auto mt-10 p-6 bg-gray-soft rounded-lg shadow-md">
-            <h1 className="text-3xl font-bold mb-6 text-center text-indigo-800">Manage Users</h1>
+            <h1 className="text-3xl font-bold mb-6 text-center text-indigo-800 font-michroma">Manage Users</h1>
             <div className="mb-8">
                 <h2 className="text-xl font-semibold mb-4 text-indigo-800">Create New User</h2>
                 <UserForm
@@ -100,7 +101,7 @@ export default function UsersPage() {
             <div className="space-y-4">
                 {users.map((user) => (
                     <UserListItem
-                        key={user._id}
+                        key={user.Id}
                         user={user}
                         editingUserId={editingUserId}
                         setEditingUserId={setEditingUserId}

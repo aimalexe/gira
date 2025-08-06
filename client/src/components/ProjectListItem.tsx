@@ -4,7 +4,7 @@ import { Project } from "@/types/Project.type";
 import ProjectForm from "./ProjectForm";
 import { FormikHelpers } from "formik";
 import { UpdateProjectSchema } from "@/validators/project.validator";
-import { UserWithUnderscoreId } from "@/types/User.type";
+import { User } from "@/types/User.type";
 import Link from "next/link";
 import { useAuthStore } from "@/lib/auth";
 
@@ -16,7 +16,7 @@ interface ProjectListItemProps {
     handleDeleteProject: (projectId: string) => void;
     handleAddMember: (projectId: string, memberIds: string) => void;
     handleRemoveMember: (projectId: string, memberId: string) => void;
-    users?: Pick<UserWithUnderscoreId, "name" | "_id">[];
+    users?: Pick<User, "name" | "Id">[];
 }
 
 export default function ProjectListItem({
@@ -29,7 +29,7 @@ export default function ProjectListItem({
     handleRemoveMember,
     users = [],
 }: ProjectListItemProps) {
-    const isEditing = editingProjectId === project._id;
+    const isEditing = editingProjectId === project.Id;
     const { user } = useAuthStore();
 
     return (
@@ -40,7 +40,7 @@ export default function ProjectListItem({
                         name: project.name,
                         description: project.description,
                         members: project.members?.map((m) => ({
-                            _id: m._id,
+                            Id: m.Id,
                             name: m.name,
                         })),
                     }}
@@ -55,15 +55,16 @@ export default function ProjectListItem({
                     <div>
                         <Link
                             href={`/project/task?projectId=${
-                                project._id
+                                project.Id
                             }&members=${JSON.stringify(
-                                project.members?.map(({ _id, name }) => ({
-                                    _id,
+                                project.members?.map(({ Id, name }) => ({
+                                    Id,
                                     name,
                                 }))
                             )}`}
+                            className="group text-pink-500 transition-all duration-300 ease-in-out"
                         >
-                            <h3 className="text-lg font-medium text-indigo-800">
+                            <h3 className="text-lg font-medium text-indigo-800 hover:text-teal-800 bg-left-bottom bg-gradient-to-r from-teal-500 to-indigo-500 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:40%_2px] transition-all duration-500 ease-out">
                                 {project.name}
                             </h3>
                         </Link>
@@ -74,7 +75,7 @@ export default function ProjectListItem({
                             </h4>
                             <ul className="list-disc list-inside text-gray-600">
                                 {project.members?.map((member) => (
-                                    <li key={member._id}>{member.name}</li>
+                                    <li key={member.Id}>{member.name}</li>
                                 ))}
                             </ul>
                         </div>
@@ -84,8 +85,12 @@ export default function ProjectListItem({
                             <select
                                 onChange={(e) => {
                                     const memberId = e.target.value;
+                                    console.log(
+                                        "🚀 ~ e.target.value:",
+                                        e.target.value
+                                    );
                                     if (memberId) {
-                                        handleAddMember(project._id, memberId);
+                                        handleAddMember(project.Id, memberId);
                                         e.target.value = ""; // Reset to default after selection
                                     }
                                 }}
@@ -96,23 +101,23 @@ export default function ProjectListItem({
                                     .filter(
                                         (user) =>
                                             !project.members?.some(
-                                                (m) => m._id === user._id
+                                                (m) => m.Id === user.Id
                                             )
                                     )
                                     .map((user) => (
-                                        <option key={user._id} value={user._id}>
+                                        <option key={user.Id} value={user.Id}>
                                             {user.name}
                                         </option>
                                     ))}
                             </select>
                             <button
-                                onClick={() => setEditingProjectId(project._id)}
+                                onClick={() => setEditingProjectId(project.Id)}
                                 className="p-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 col-span-1"
                             >
                                 Edit
                             </button>
                             <button
-                                onClick={() => handleDeleteProject(project._id)}
+                                onClick={() => handleDeleteProject(project.Id)}
                                 className="p-2 bg-red-500 text-white rounded-md hover:bg-red-600"
                             >
                                 Delete
@@ -123,7 +128,7 @@ export default function ProjectListItem({
                                         const memberId = e.target.value;
                                         if (memberId) {
                                             handleRemoveMember(
-                                                project._id,
+                                                project.Id,
                                                 memberId
                                             );
                                             e.target.value = ""; // Reset to default after selection
@@ -134,8 +139,8 @@ export default function ProjectListItem({
                                     <option value="">Remove Member</option>
                                     {project.members?.map((member) => (
                                         <option
-                                            key={member._id}
-                                            value={member._id}
+                                            key={member.Id}
+                                            value={member.Id}
                                         >
                                             {member.name}
                                         </option>

@@ -9,25 +9,15 @@ import TaskForm from "@/components/TaskForm";
 import TaskListItem from "@/components/TaskListItem";
 import Pagination from "@/components/Pagination";
 import { CreateTaskSchema } from "@/validators/task.validator";
-import { UserWithUnderscoreId } from "@/types/User.type";
-
-interface Task {
-    _id: string;
-    title: string;
-    description: string;
-    status: "To Do" | "In Progress" | "Done" | "Blocked";
-    assignedTo: string;
-    dueDate: string;
-    fileAttachment?: string;
-    projectId: string;
-}
+import { User } from "@/types/User.type";
+import { Task } from "@/types/Task.type";
 
 export default function TaskPage() {
     const { user } = useAuthStore();
     const router = useRouter();
     const searchParams = useSearchParams();
     const projectId = searchParams.get("projectId") || "";
-    const members: Pick<UserWithUnderscoreId, "_id" | "name">[] = JSON.parse(
+    const members: Pick<User, "Id" | "name">[] = JSON.parse(
         searchParams.get("members") ?? "[]"
     );
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -81,7 +71,6 @@ export default function TaskPage() {
         values: any,
         { setSubmitting, resetForm }: FormikHelpers<any>
     ) => {
-        console.log("🚀 ~ handleCreateTask ~ values:", values);
         try {
             const data = {
                 title: values.title,
@@ -129,7 +118,7 @@ export default function TaskPage() {
     const handleDeleteTask = async (taskId: string) => {
         if (confirm("Are you sure you want to delete this task?")) {
             try {
-                await api.delete(`/task/${taskId}`);
+                await api.delete(`/task/${projectId}/${taskId}`);
                 fetchTasks();
             } catch (err: any) {
                 setError(
@@ -145,7 +134,7 @@ export default function TaskPage() {
 
     return (
         <div className="max-w-4xl mx-auto mt-10 p-6 bg-gray-100 rounded-lg shadow-md">
-            <h1 className="text-3xl font-bold mb-6 text-center text-indigo-800">
+            <h1 className="text-3xl font-bold mb-6 text-center text-indigo-800 font-michroma">
                 Manage Tasks for Project
             </h1>
             <div className="mb-8">
@@ -157,7 +146,6 @@ export default function TaskPage() {
                         title: "",
                         description: "",
                         status: "To Do",
-                        assignedTo: "",
                         dueDate: "",
                         fileAttachment: "",
                         projectId,
@@ -194,7 +182,7 @@ export default function TaskPage() {
                         >
                             <option value="">All</option>
                             {members.map((member) => (
-                                <option key={member._id} value={member._id}>
+                                <option key={member.Id} value={member.Id}>
                                     {member.name}
                                 </option>
                             ))}
@@ -234,7 +222,7 @@ export default function TaskPage() {
             <div className="space-y-4">
                 {tasks.map((task) => (
                     <TaskListItem
-                        key={task._id}
+                        key={task.Id}
                         task={task}
                         editingTaskId={editingTaskId}
                         setEditingTaskId={setEditingTaskId}

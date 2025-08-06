@@ -12,25 +12,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <body className="bg-gray-100">
                 <nav className="bg-indigo-500 text-white p-4">
                     <div className="max-w-4xl mx-auto flex justify-between items-center">
-                        <Link href="/" className="text-lg font-bold">Gira</Link>
+                        <Link href="/" className="text-lg font-bold font-michroma">Gira</Link>
                         <div className="space-x-4">
                             {user ? (
                                 <>
                                     {user.role === 'admin' ? (
                                         <>
-                                            <Link href="/user" className="p-2 hover:bg-teal-600 rounded">
+                                            <Link href="/user" className="p-2 hover:bg-indigo-700 rounded">
                                                 Users
                                             </Link>
-                                            <Link href="/project" className="p-2 hover:bg-teal-600 rounded">
+                                            <Link href="/project" className="p-2 hover:bg-indigo-700 rounded">
                                                 Projects
                                             </Link>
                                         </>
                                     ) : (
                                         <>
-                                            <Link href="/project" className="p-2 hover:bg-teal-600 rounded">
+                                            <Link href="/project" className="p-2 hover:bg-indigo-700 rounded">
                                                 Projects
                                             </Link>
-                                            {/* <Link href="/tasks" className="p-2 hover:bg-teal-600 rounded">
+                                            {/* <Link href="/tasks" className="p-2 hover:bg-indigo-700 rounded">
                                                 Tasks
                                             </Link> */}
                                         </>
@@ -46,7 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                     </button>
                                 </>
                             ) : (
-                                <Link href="/login" className="p-2 bg-teal-500 rounded hover:bg-teal-600">
+                                <Link href="/login" className="p-2 bg-teal-500 rounded hover:bg-indigo-700">
                                     Login
                                 </Link>
                             )}

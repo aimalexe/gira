@@ -1,23 +1,16 @@
 "use client";
 
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { UserWithUnderscoreId } from "@/types/User.type";
+import { User } from "@/types/User.type";
+import { Task } from "@/types/Task.type";
 
 interface TaskFormProps {
-    initialValues: {
-        title: string;
-        description: string;
-        status: "To Do" | "In Progress" | "Done" | "Blocked";
-        assignedTo: string;
-        dueDate: string;
-        fileAttachment?: string;
-        projectId: string;
-    };
+    initialValues: Omit<Task, "Id">;
     validationSchema: any;
     onSubmit: (values: any, actions: any) => void;
     isSubmitting: boolean;
     isCreate?: boolean;
-    users: Pick<UserWithUnderscoreId, "name" | "_id">[];
+    users: Pick<User, "name" | "Id">[];
 }
 
 export default function TaskForm({
@@ -71,7 +64,7 @@ export default function TaskForm({
                             >
                                 <option value="">Select User</option>
                                 {users.map((user) => (
-                                    <option key={user._id} value={user._id}>
+                                    <option key={user.Id} value={user.Id}>
                                         {user.name}
                                     </option>
                                 ))}

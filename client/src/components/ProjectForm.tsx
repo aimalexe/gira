@@ -1,7 +1,7 @@
 "use client";
 
 import { Project } from "@/types/Project.type";
-import { UserWithUnderscoreId } from "@/types/User.type";
+import { User } from "@/types/User.type";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 
 interface ProjectFormProps {
@@ -10,7 +10,7 @@ interface ProjectFormProps {
     onSubmit: (values: any, actions: any) => void;
     isSubmitting: boolean;
     isCreate?: boolean;
-    users: Pick<UserWithUnderscoreId, "name" | "_id">[];
+    users: Pick<User, "name" | "Id">[];
 }
 
 export default function ProjectForm({
@@ -65,7 +65,7 @@ export default function ProjectForm({
                                     className="w-full p-2 mt-1 border rounded-md focus:ring focus:ring-teal-500"
                                 >
                                     {users.map((user) => (
-                                        <option key={user._id} value={user._id}>
+                                        <option key={user.Id} value={user.Id}>
                                             {user.name}
                                         </option>
                                     ))}
