@@ -52,7 +52,6 @@ const allowRoles = (...allowedRoles) => async (req, res, next) => {
             })
 
         req.user = user;
-        console.log("🚀 ~ allowRoles ~ req.user:", req.user)
         next();
     } catch (err) {
         next(err);

@@ -9,7 +9,7 @@ const asyncHandler = (routeHandlerFunction) => (req, res, next) =>
                 🧾 Stack: ${error.stack?.split("\n")[1]?.trim() || "No stack trace"}
             `);
 
-            next(error); y
+            next(error);
         });
 
 
