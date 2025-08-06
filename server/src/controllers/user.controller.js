@@ -45,9 +45,11 @@ const getAllUsers = async (req, res, next) => {
             status: 'success',
             message: 'Users retrieved',
             users,
-            total,
-            pageNo,
-            itemsPerPage
+            pagination: {
+                total,
+                pageNo,
+                itemsPerPage
+            }
         });
     } catch (error) {
         next(error);
