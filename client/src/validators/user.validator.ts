@@ -11,5 +11,4 @@ export const UpdateUserSchema = Yup.object().shape({
     name: Yup.string().min(2, 'Name must be at least 2 characters'),
     email: Yup.string().email('Invalid email'),
     password: Yup.string().min(6, 'Password must be at least 6 characters').optional(),
-    role: Yup.string().oneOf(['admin', 'user'], 'Invalid role'),
 });
