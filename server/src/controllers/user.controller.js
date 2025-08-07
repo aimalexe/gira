@@ -39,7 +39,7 @@ const getAllUsers = async (req, res, next) => {
             .select('-password')
             .skip((pageNo - 1) * itemsPerPage)
             .limit(parseInt(itemsPerPage));
-            const total = await User.countDocuments(query);
+        const total = await User.countDocuments(query);
 
         return res.status(200).json({
             status: 'success',
@@ -105,7 +105,7 @@ const updateUser = async (req, res, next) => {
 
         const updatedUser = await User.findByIdAndUpdate(
             id,
-            { ...req.validatedData, updated_by: req?.user._id ??  null },
+            { ...req.validatedData, updated_by: req?.user._id ?? null },
             { new: true, runValidators: true }
         ).select('-password');
 
@@ -126,6 +126,13 @@ const deleteUser = async (req, res, next) => {
             return res.status(400).json({
                 status: 'error',
                 message: 'User ID is required for deletion'
+            });
+        }
+
+        if (req.user.role === 'admin' && req.user._id.toString() !== id) {
+            return res.status(403).json({
+                status: 'error',
+                message: 'Forbidden: Admins can only delete their own account'
             });
         }
 

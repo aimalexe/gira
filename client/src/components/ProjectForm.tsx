@@ -3,6 +3,7 @@
 import { Project } from "@/types/Project.type";
 import { User } from "@/types/User.type";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Button } from "@/components/Button";
 
 interface ProjectFormProps {
     initialValues: Pick<Project, "name" | "description" | "members">;
@@ -29,40 +30,63 @@ export default function ProjectForm({
         >
             {() => (
                 <Form className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                         <div>
                             <label
                                 htmlFor="name"
-                                className="block text-sm font-medium text-indigo-800"
+                                className="block text-sm font-medium text-gray-700 mb-1"
                             >
-                                Name
+                                Project Name
                             </label>
                             <Field
                                 id="name"
                                 name="name"
                                 type="text"
-                                className="w-full p-2 mt-1 border rounded-md focus:ring focus:ring-teal-500"
+                                placeholder="Project name"
+                                className="w-full px-3 py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all duration-200"
                             />
                             <ErrorMessage
                                 name="name"
                                 component="p"
-                                className="text-red-500 text-sm mt-1"
+                                className="text-red-500 text-xs mt-1"
                             />
                         </div>
+
+                        <div>
+                            <label
+                                htmlFor="description"
+                                className="block text-sm font-medium text-gray-700 mb-1"
+                            >
+                                Description
+                            </label>
+                            <Field
+                                as="textarea"
+                                id="description"
+                                name="description"
+                                placeholder="Project description"
+                                className="w-full px-3 py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all duration-200 min-h-[100px]"
+                            />
+                            <ErrorMessage
+                                name="description"
+                                component="p"
+                                className="text-red-500 text-xs mt-1"
+                            />
+                        </div>
+
                         {isCreate && (
-                            <div className="col-span-1">
+                            <div>
                                 <label
                                     htmlFor="members"
-                                    className="block text-sm font-medium text-indigo-800"
+                                    className="block text-sm font-medium text-gray-700 mb-1"
                                 >
-                                    Members
+                                    Team Members
                                 </label>
                                 <Field
                                     as="select"
                                     id="members"
                                     name="members"
                                     multiple
-                                    className="w-full p-2 mt-1 border rounded-md focus:ring focus:ring-teal-500"
+                                    className="w-full px-3 py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all duration-200"
                                 >
                                     {users.map((user) => (
                                         <option key={user.Id} value={user.Id}>
@@ -73,46 +97,22 @@ export default function ProjectForm({
                                 <ErrorMessage
                                     name="members"
                                     component="p"
-                                    className="text-red-500 text-sm mt-1"
+                                    className="text-red-500 text-xs mt-1"
                                 />
                             </div>
                         )}
                     </div>
 
-                    <div>
-                        <label
-                            htmlFor="description"
-                            className="block text-sm font-medium text-indigo-800"
+                    <div className="flex justify-end pt-4">
+                        <Button
+                            type="submit"
+                            variant="primary"
+                            isLoading={isSubmitting}
+                            className="w-full sm:w-auto"
                         >
-                            Description
-                        </label>
-                        <Field
-                            as="textarea"
-                            id="description"
-                            name="description"
-                            className="w-full p-2 mt-1 border rounded-md focus:ring focus:ring-teal-500"
-                        />
-                        <ErrorMessage
-                            name="description"
-                            component="p"
-                            className="text-red-500 text-sm mt-1"
-                        />
+                            {isCreate ? "Create Project" : "Update Project"}
+                        </Button>
                     </div>
-                    <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className={`mx-auto w-[50%] p-2 ${
-                            isCreate ? "bg-teal-500" : "bg-indigo-600"
-                        } text-white rounded-md hover:bg-opacity-90 disabled:opacity-50`}
-                    >
-                        {isSubmitting
-                            ? isCreate
-                                ? "Creating..."
-                                : "Updating..."
-                            : isCreate
-                            ? "Create Project"
-                            : "Update"}
-                    </button>
                 </Form>
             )}
         </Formik>

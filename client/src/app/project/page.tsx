@@ -1,53 +1,63 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { FormikHelpers } from 'formik';
-import { useAuthStore } from '@/lib/auth';
-import api from '@/lib/api';
-import ProjectForm from '@/components/ProjectForm';
-import ProjectListItem from '@/components/ProjectListItem';
-import { CreateProjectSchema} from '@/validators/project.validator';
-import { Project } from '@/types/Project.type';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/lib/auth";
+import api from "@/lib/api";
+import ProjectCard from "@/components/ProjectCard";
+import {
+    CreateProjectSchema,
+    UpdateProjectSchema,
+} from "@/validators/project.validator";
+import { Project } from "@/types/Project.type";
+import { Button } from "@/components/Button";
+import { Modal } from "@/components/Modal";
+import ProjectForm from "@/components/ProjectForm";
+import { FormikHelpers } from "formik";
 
 export default function ProjectsPage() {
     const { user } = useAuthStore();
     const router = useRouter();
     const [projects, setProjects] = useState<Project[]>([]);
     const [users, setUsers] = useState<{ Id: string; name: string }[]>([]);
-    const [error, setError] = useState('');
-    const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+    const [error, setError] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentProject, setCurrentProject] = useState<Project | null>(null);
 
     useEffect(() => {
         if (user) {
-            if (user.role === 'admin') {
+            if (user.role === "admin") {
                 fetchProjects();
                 fetchUsers();
-            } else if (user.role === 'user') {
+            } else if (user.role === "user") {
                 fetchProjects();
             }
         } else {
-            router.push('/login');
+            router.push("/login");
         }
     }, [user, router]);
 
     const fetchProjects = async () => {
         try {
-            const response = await api.get('/project');
+            const response = await api.get("/project");
             setProjects(response.data.data || []);
-            setError('');
+            setError("");
         } catch (err: any) {
-            console.log('🚀 ~ fetchProjects ~ err:', err);
-            setError(err.response?.data?.message || 'Failed to fetch projects');
+            setError(err.response?.data?.message || "Failed to fetch projects");
         }
     };
 
     const fetchUsers = async () => {
         try {
-            const response = await api.get('/user', { params: { limit: 100 } });
-            setUsers(response.data.users.map((u: any) => ({ Id: u.Id, name: u.name })));
+            const response = await api.get("/user", { params: { limit: 100 } });
+            setUsers(
+                response.data.users.map((u: any) => ({
+                    Id: u.Id,
+                    name: u.name,
+                }))
+            );
         } catch (err: any) {
-            console.log('Failed to fetch users:', err);
+            console.log("Failed to fetch users:", err);
         }
     };
 
@@ -55,15 +65,15 @@ export default function ProjectsPage() {
         values: { name: string; description: string; members: string[] },
         { setSubmitting, resetForm }: FormikHelpers<any>
     ) => {
-        console.log("🚀 ~ handleCreateProject ~ values:", values)
-        if (user?.role !== 'admin') return; // Restrict create to admin
+        if (user?.role !== "admin") return;
         try {
-            await api.post('/project', values);
+            await api.post("/project", values);
             resetForm();
             fetchProjects();
-            setError('');
+            setError("");
+            setIsModalOpen(false);
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to create project');
+            setError(err.response?.data?.message || "Failed to create project");
             setSubmitting(false);
         }
     };
@@ -72,54 +82,61 @@ export default function ProjectsPage() {
         values: { name?: string; description?: string; members?: string[] },
         { setSubmitting }: FormikHelpers<any>
     ) => {
-        if (user?.role !== 'admin') return; // Restrict update to admin
+        if (!currentProject || user?.role !== "admin") return;
         try {
-            if (values.members && values.members.length > 0) delete values.members;
-            await api.put(`/project/${editingProjectId}`, values);
-            setEditingProjectId(null);
+            if (values.members && values.members.length > 0)
+                delete values.members;
+            await api.put(`/project/${currentProject.Id}`, values);
+            setCurrentProject(null);
             fetchProjects();
-            setError('');
+            setError("");
+            setIsModalOpen(false);
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to update project');
+            setError(err.response?.data?.message || "Failed to update project");
             setSubmitting(false);
         }
     };
 
     const handleDeleteProject = async (projectId: string) => {
-        if (user?.role !== 'admin') return; // Restrict delete to admin
-        if (confirm('Are you sure you want to delete this project?')) {
+        if (user?.role !== "admin") return;
+        if (confirm("Are you sure you want to delete this project?")) {
             try {
                 await api.delete(`/project/${projectId}`);
                 fetchProjects();
             } catch (err: any) {
-                setError(err.response?.data?.message || 'Failed to delete project');
+                setError(
+                    err.response?.data?.message || "Failed to delete project"
+                );
             }
         }
     };
 
     const handleAddMember = async (projectId: string, memberId: string) => {
-        console.log("🚀 ~ handleAddMember ~ memberId:", memberId)
-        if (user?.role !== 'admin') return; // Restrict add member to admin
+        if (user?.role !== "admin") return;
         if (memberId) {
             try {
-                await api.post(`/project/${projectId}/members`, { userIds: [memberId] });
+                await api.post(`/project/${projectId}/members`, {
+                    userIds: [memberId],
+                });
                 fetchProjects();
             } catch (err: any) {
-                console.log('🚀 ~ handleAddMember ~ err:', err);
-                setError(err.response?.data?.message || 'Failed to add member');
+                setError(err.response?.data?.message || "Failed to add member");
             }
         }
     };
 
     const handleRemoveMember = async (projectId: string, memberId: string) => {
-        console.log("🚀 ~ handleRemoveMember ~ memberId:", memberId)
-        if (user?.role !== 'admin') return; // Restrict remove member to admin
+        if (user?.role !== "admin") return;
         if (memberId) {
             try {
-                await api.delete(`/project/${projectId}/members`, { data: { userIds: [memberId] } });
+                await api.delete(`/project/${projectId}/members`, {
+                    data: { userIds: [memberId] },
+                });
                 fetchProjects();
             } catch (err: any) {
-                setError(err.response?.data?.message || 'Failed to remove member');
+                setError(
+                    err.response?.data?.message || "Failed to remove member"
+                );
             }
         }
     };
@@ -129,45 +146,94 @@ export default function ProjectsPage() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto mt-10 p-6 bg-gray-100 rounded-lg shadow-md">
-            <h1 className="text-3xl font-bold mb-6 text-center text-indigo-800 font-michroma">
-                Manage Projects
-            </h1>
-            {user.role === 'admin' && (
-                <div className="mb-8">
-                    <h2 className="text-xl font-semibold mb-4 text-indigo-800">
-                        Create New Project
-                    </h2>
-                    <ProjectForm
-                        initialValues={{ name: '', description: '', members: [] }}
-                        validationSchema={CreateProjectSchema}
-                        onSubmit={handleCreateProject}
-                        isSubmitting={false}
-                        isCreate={true}
-                        users={users}
-                    />
+        <div className="max-w-6xl mx-auto p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm overflow-hidden border border-gray-200 p-6">
+                <div className="flex justify-between items-center mb-8">
+                    <h1 className="text-2xl font-bold text-gray-800">
+                        Project Management
+                    </h1>
+                    {user.role === "admin" && (
+                        <Button
+                            variant="primary"
+                            onClick={() => {
+                                setCurrentProject(null);
+                                setIsModalOpen(true);
+                            }}
+                        >
+                            Create New Project
+                        </Button>
+                    )}
                 </div>
-            )}
-            <h2 className="text-xl font-semibold mb-4 text-indigo-800">
-                Projects
-            </h2>
-            {error && <p className="text-red-500 mb-4">{error}</p>}
-            <div className="space-y-4">
-                {projects.map((project) => (
-                    <ProjectListItem
-                        key={project.Id}
-                        project={project}
-                        editingProjectId={editingProjectId}
-                        setEditingProjectId={setEditingProjectId}
-                        handleUpdateProject={handleUpdateProject}
-                        handleDeleteProject={handleDeleteProject}
-                        handleAddMember={handleAddMember}
-                        handleRemoveMember={handleRemoveMember}
-                        users={users}
-                    />
-                ))}
+
+                {error && (
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
+                        {error}
+                    </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {projects.length > 0 ? (
+                        projects.map((project) => (
+                            <ProjectCard
+                                key={project.Id}
+                                project={project}
+                                onEdit={() => {
+                                    setCurrentProject(project);
+                                    setIsModalOpen(true);
+                                }}
+                                onDelete={() => handleDeleteProject(project.Id)}
+                                onAddMember={(memberId) =>
+                                    handleAddMember(project.Id, memberId)
+                                }
+                                onRemoveMember={(memberId) =>
+                                    handleRemoveMember(project.Id, memberId)
+                                }
+                                users={users}
+                                currentUser={user}
+                            />
+                        ))
+                    ) : (
+                        <div className="col-span-full p-6 text-center text-gray-500 bg-white rounded-lg border border-gray-200">
+                            No projects found
+                        </div>
+                    )}
+                </div>
             </div>
+
+            {/* Project Form Modal */}
+            <Modal
+                isOpen={isModalOpen}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setCurrentProject(null);
+                }}
+                title={
+                    currentProject
+                        ? `Edit ${currentProject.name}`
+                        : "Create New Project"
+                }
+            >
+                <ProjectForm
+                    initialValues={{
+                        name: currentProject?.name || "",
+                        description: currentProject?.description || "",
+                        members: currentProject?.members || [],
+                    }}
+                    validationSchema={
+                        currentProject
+                            ? UpdateProjectSchema
+                            : CreateProjectSchema
+                    }
+                    onSubmit={
+                        currentProject
+                            ? handleUpdateProject
+                            : handleCreateProject
+                    }
+                    isSubmitting={false}
+                    isCreate={!currentProject}
+                    users={users}
+                />
+            </Modal>
         </div>
     );
 }
-
