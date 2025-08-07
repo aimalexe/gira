@@ -7,11 +7,19 @@ import { useAuthStore } from "@/lib/auth";
 import api from "@/lib/api";
 import UserForm from "@/components/UserForm";
 import Pagination from "@/components/Pagination";
-import { CreateUserSchema, UpdateUserSchema } from "@/validators/user.validator";
+import {
+    CreateUserSchema,
+    UpdateUserSchema,
+} from "@/validators/user.validator";
 import { User } from "@/types/User.type";
 import { Button } from "@/components/Button";
 import { Modal } from "@/components/Modal";
 import { Table, TableRow, TableCell } from "@/components/Table";
+import {
+    PencilSquareIcon,
+    TrashIcon,
+    UserPlusIcon,
+} from "@heroicons/react/20/solid";
 
 export default function UsersPage() {
     const { user: currentUser } = useAuthStore();
@@ -77,7 +85,6 @@ export default function UsersPage() {
             name?: string;
             email?: string;
             password?: string;
-            role?: "admin" | "user";
         },
         { setSubmitting }: FormikHelpers<any>
     ) => {
@@ -99,7 +106,9 @@ export default function UsersPage() {
                 await api.delete(`/user/${userId}`);
                 fetchUsers();
             } catch (err: any) {
-                setError(err.response?.data?.message || "Failed to delete user");
+                setError(
+                    err.response?.data?.message || "Failed to delete user"
+                );
             }
         }
     };
@@ -109,8 +118,8 @@ export default function UsersPage() {
     }
 
     return (
-        <div className="mx-auto p-3">
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm overflow-hidden border border-gray-200 p-6">
+        <div className="w-full md:max-w-6xl mx-auto p-3">
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden p-6">
                 <div className="flex justify-between items-center mb-8 flex-wrap">
                     <h1 className="text-2xl font-bold text-gray-800">
                         User Management
@@ -119,7 +128,8 @@ export default function UsersPage() {
                         variant="primary"
                         onClick={() => setIsCreateModalOpen(true)}
                     >
-                        Create New User
+                        <UserPlusIcon className="h-5 w-5 text-white" /> Create
+                        New User
                     </Button>
                 </div>
 
@@ -153,13 +163,17 @@ export default function UsersPage() {
                                             variant="primary"
                                             onClick={() => setEditingUser(user)}
                                         >
+                                            <PencilSquareIcon className="h-5 w-5 text-white" />{" "}
                                             Edit
                                         </Button>
                                         {user.role !== "admin" && (
                                             <Button
                                                 variant="danger"
-                                                onClick={() => handleDeleteUser(user.Id)}
+                                                onClick={() =>
+                                                    handleDeleteUser(user.Id)
+                                                }
                                             >
+                                                <TrashIcon className="h-5 w-5 text-white" />{" "}
                                                 Delete
                                             </Button>
                                         )}
@@ -169,7 +183,10 @@ export default function UsersPage() {
                         ))
                     ) : (
                         <TableRow>
-                            <TableCell colSpan={4} className="text-center py-8 text-gray-500">
+                            <TableCell
+                                colSpan={4}
+                                className="text-center py-8 text-gray-500"
+                            >
                                 No users found
                             </TableCell>
                         </TableRow>
@@ -220,6 +237,7 @@ export default function UsersPage() {
                         }}
                         validationSchema={UpdateUserSchema}
                         onSubmit={(values, actions) => {
+                            delete values.role;
                             handleUpdateUser(editingUser.Id, values, actions);
                         }}
                         isSubmitting={false}

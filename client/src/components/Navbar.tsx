@@ -231,7 +231,7 @@ const AuthenticatedMobileMenu = ({
                 await logout();
                 closeMenu();
             }}
-            className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-500 hover:bg-red-500/10 border border-red-500/30 transition-all duration-300"
+            className="block ml-auto text-left px-3 py-2 rounded-md text-base font-medium text-red-500 hover:bg-red-500/10 border border-red-500/30 transition-all duration-300"
         >
             Logout
         </button>

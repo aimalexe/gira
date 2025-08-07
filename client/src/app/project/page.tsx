@@ -14,6 +14,7 @@ import { Button } from "@/components/Button";
 import { Modal } from "@/components/Modal";
 import ProjectForm from "@/components/ProjectForm";
 import { FormikHelpers } from "formik";
+import { FolderPlusIcon } from "@heroicons/react/20/solid";
 
 export default function ProjectsPage() {
     const { user } = useAuthStore();
@@ -146,9 +147,9 @@ export default function ProjectsPage() {
     }
 
     return (
-        <div className="max-w-6xl mx-auto p-6">
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm overflow-hidden border border-gray-200 p-6">
-                <div className="flex justify-between items-center mb-8">
+        <div className="w-full md:max-w-6xl mx-auto p-2">
+            <div className="bg-white/80 backdrop-blur-sm overflow-hidden p-6">
+                <div className="flex justify-between items-center mb-8 flex-wrap">
                     <h1 className="text-2xl font-bold text-gray-800">
                         Project Management
                     </h1>
@@ -160,6 +161,7 @@ export default function ProjectsPage() {
                                 setIsModalOpen(true);
                             }}
                         >
+                            <FolderPlusIcon className="h-5 w-5 text-white" />{" "}
                             Create New Project
                         </Button>
                     )}

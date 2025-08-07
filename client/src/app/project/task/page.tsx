@@ -16,6 +16,7 @@ import { Modal } from "@/components/Modal";
 import TaskForm from "@/components/TaskForm";
 import Pagination from "@/components/Pagination";
 import { FormikHelpers } from "formik";
+import { PlusCircleIcon } from "@heroicons/react/20/solid";
 
 export default function TaskPage() {
     const { user } = useAuthStore();
@@ -142,9 +143,9 @@ export default function TaskPage() {
     }
 
     return (
-        <div className="max-w-6xl mx-auto p-6">
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm overflow-hidden border border-gray-200 p-6">
-                <div className="flex justify-between items-center mb-8">
+        <div className="w-full md:max-w-6xl mx-auto p-2">
+            <div className="bg-white/80 backdrop-blur-sm overflow-hidden p-6">
+                <div className="flex justify-between items-center mb-8 flex-wrap">
                     <h1 className="text-2xl font-bold text-gray-800">
                         Task Management
                     </h1>
@@ -155,7 +156,8 @@ export default function TaskPage() {
                             setIsModalOpen(true);
                         }}
                     >
-                        Create New Task
+                        <PlusCircleIcon className="h-5 w-5 text-white" /> Create
+                        New Task
                     </Button>
                 </div>
 

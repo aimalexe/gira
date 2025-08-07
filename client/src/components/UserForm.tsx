@@ -97,7 +97,7 @@ export default function UserForm({
                                 </p>
                             )}
                         </div>
-                        <div>
+                        {isCreate && (<div>
                             <label
                                 htmlFor="role"
                                 className="block text-sm font-medium text-gray-700 mb-1"
@@ -118,7 +118,7 @@ export default function UserForm({
                                 component="p"
                                 className="text-red-500 text-xs mt-1"
                             />
-                        </div>
+                        </div>)}
                     </div>
                     <div className="flex justify-end pt-4">
                         <Button

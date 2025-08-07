@@ -9,6 +9,7 @@ import {
     ChevronDownIcon,
     UserPlusIcon,
     UserMinusIcon,
+    ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/20/solid";
 import Avatar from "@/components/Avatar";
 
@@ -33,7 +34,7 @@ export default function ProjectCard({
 }: ProjectCardProps) {
     return (
         <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
-            <div className="p-6">
+            <div className="flex-col p-3 md:p-6">
                 <div className="flex justify-between items-start">
                     <Link
                         href={`/project/task?projectId=${
@@ -44,11 +45,12 @@ export default function ProjectCard({
                                 name,
                             }))
                         )}`}
-                        className="group"
+                        className="flex items-center justify-center gap-2 group"
                     >
                         <h3 className="text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
                             {project.name}
                         </h3>
+                        <ArrowTopRightOnSquareIcon className="h-5 w-5 text-gray-800 group-hover:text-blue-600 transition-colors" />
                     </Link>
 
                     {currentUser.role === "admin" && (
@@ -156,7 +158,7 @@ export default function ProjectCard({
                 )}
 
                 {currentUser.role === "admin" && (
-                    <div className="mt-4 pt-4 border-t border-gray-100">
+                    <div className="self-baseline mt-4 pt-4 border-t border-gray-100">
                         <Menu as="div" className="relative">
                             <Menu.Button className="inline-flex w-full justify-center rounded-md bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-100">
                                 <UserPlusIcon className="h-4 w-4 mr-2" />

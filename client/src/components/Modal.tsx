@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { Button } from "./Button";
-
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -17,6 +15,10 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
         } else {
             document.body.style.overflow = "auto";
         }
+
+        return () => {
+            document.body.style.overflow = "auto";
+        };
     }, [isOpen]);
 
     if (!isOpen) return null;
