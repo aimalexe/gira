@@ -128,16 +128,18 @@ export default function ProjectsPage() {
 
     const handleRemoveMember = async (projectId: string, memberId: string) => {
         if (user?.role !== "admin") return;
-        if (memberId) {
-            try {
-                await api.delete(`/project/${projectId}/members`, {
-                    data: { userIds: [memberId] },
-                });
-                fetchProjects();
-            } catch (err: any) {
-                setError(
-                    err.response?.data?.message || "Failed to remove member"
-                );
+        if (confirm("Are you sure you want to remove this user?")) {
+            if (memberId) {
+                try {
+                    await api.delete(`/project/${projectId}/members`, {
+                        data: { userIds: [memberId] },
+                    });
+                    fetchProjects();
+                } catch (err: any) {
+                    setError(
+                        err.response?.data?.message || "Failed to remove member"
+                    );
+                }
             }
         }
     };

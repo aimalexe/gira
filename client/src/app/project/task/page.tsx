@@ -168,9 +168,9 @@ export default function TaskPage() {
                 )}
 
                 <div className="mb-6 bg-gray-50 p-4 rounded-lg">
-                    <h2 className="text-lg font-semibold mb-3 text-gray-800">
+                    {/* <h2 className="text-lg font-semibold mb-3 text-gray-800">
                         Filters
-                    </h2>
+                    </h2> */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">

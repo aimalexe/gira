@@ -32,19 +32,19 @@ export default function ProjectCard({
     users,
     currentUser,
 }: ProjectCardProps) {
+    const params = new URLSearchParams({
+        projectId: project.Id,
+        members: JSON.stringify(
+            project.members?.map(({ Id, name }) => ({ Id, name })) || []
+        ),
+    });
+
     return (
         <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
             <div className="flex-col p-3 md:p-6">
                 <div className="flex justify-between items-start">
                     <Link
-                        href={`/project/task?projectId=${
-                            project.Id
-                        }&members=${JSON.stringify(
-                            project.members?.map(({ Id, name }) => ({
-                                Id,
-                                name,
-                            }))
-                        )}`}
+                        href={`/project/task?${params.toString()}`}
                         className="flex items-center justify-center gap-2 group"
                     >
                         <h3 className="text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
