@@ -1,6 +1,6 @@
 const express = require('express');
 const asyncHandler = require('../middlewares/async-handler');
-const { authenticateUser } = require('../middlewares/auth.middleware');
+const { authenticateUser, allowRoles } = require('../middlewares/auth.middleware');
 const isValidId = require('../middlewares/is-valid-id');
 const validateAndSanitize = require('../middlewares/validate-and-sanitize');
 const { validateCreateTask, validateUpdateTask, validateTaskQuery } = require('../validators/task.validator');
@@ -35,7 +35,7 @@ router.put(
 
 router.delete(
     '/:projectId/:id',
-    [authenticateUser, isValidId],
+    [allowRoles("admin"), isValidId],
     asyncHandler(controller.deleteTask)
 );
 

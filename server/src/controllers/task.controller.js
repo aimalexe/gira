@@ -4,6 +4,7 @@ const User = require('../models/User.model');
 const fs = require("node:fs/promises");
 const path = require("node:path");
 const { safeDelete } = require('../utils/safe-delete-file.util');
+const { sendEmail } = require('../utils/send-email.util');
 
 const createTask = async (req, res) => {
     const { title, description, status, assigned_to, due_date, project } = req.validatedData;
@@ -34,8 +35,6 @@ const createTask = async (req, res) => {
             mimetype: req.file.mimetype,
         }
         : null;
-    console.log("🚀 ~ createTask ~ file_attachment:", file_attachment)
-    console.log("🚀 ~ createTask ~ req.file:", req.file)
 
     const task = new Task({
         title,
@@ -151,9 +150,9 @@ const getTaskById = async (req, res) => {
 
 const updateTask = async (req, res) => {
     const { projectId, id } = req.params;
-    const { assigned_to } = req.validatedData;
+    const { assigned_to, status } = req.validatedData;
 
-    const project = await Project.findById(projectId);
+    const project = await Project.findById(projectId).populate("created_by", "name email");
     if (!project) {
         return res.status(404).json({ status: "error", message: "Project not found" });
     }
@@ -189,7 +188,7 @@ const updateTask = async (req, res) => {
             fileAttachment.mimetype !== req.file.mimetype;
 
         if (isDifferentFile) {
-            if(fileAttachment?.path) await safeDelete(fileAttachment?.path);
+            if (fileAttachment?.path) await safeDelete(fileAttachment?.path);
 
             fileAttachment = {
                 filename: req.file.filename,
@@ -214,8 +213,26 @@ const updateTask = async (req, res) => {
         { path: "assigned_to", select: "name email" },
         { path: "created_by", select: "name email" },
         { path: "updated_by", select: "name email" },
-        { path: "project", select: "name" },
+        { path: "project", select: "name created_by" },
     ]);
+
+    if (status === 'Done' && task.status !== 'Done') {
+        try {
+            const creatorEmail = project.created_by.email;
+            const subject = `Task Completed: ${updatedTask.title}`;
+            const html = `
+                <h2>Task Completed</h2>
+                <p><strong>Task:</strong> ${updatedTask.title}</p>
+                <p><strong>Project:</strong> ${project.name}</p>
+                <p><strong>Assigned To:</strong> ${updatedTask.assigned_to.name}</p>
+                <p><strong>Completed On:</strong> ${new Date().toLocaleString()}</p>
+                <p>The task has been marked as completed.</p>
+            `;
+            await sendEmail({ to: creatorEmail, subject, html });
+        } catch (err) {
+            console.error('Failed to send email:', err);
+        }
+    }
 
     res.status(200).json({ status: "success", data: updatedTask });
 };

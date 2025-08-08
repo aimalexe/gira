@@ -114,6 +114,7 @@ export default function ProjectsPage() {
 
     const handleAddMember = async (projectId: string, memberId: string) => {
         if (user?.role !== "admin") return;
+        if (!confirm("Are you sure you want to add this user?")) return;
         if (memberId) {
             try {
                 await api.post(`/project/${projectId}/members`, {

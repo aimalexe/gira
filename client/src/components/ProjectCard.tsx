@@ -160,7 +160,7 @@ export default function ProjectCard({
                 {currentUser.role === "admin" && (
                     <div className="self-baseline mt-4 pt-4 border-t border-gray-100">
                         <Menu as="div" className="relative">
-                            <Menu.Button className="inline-flex w-full justify-center rounded-md bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-100">
+                            <Menu.Button className="inline-flex w-full justify-center rounded-md bg-gray-50 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-blue-100">
                                 <UserPlusIcon className="h-4 w-4 mr-2" />
                                 Add Team Member
                                 <ChevronDownIcon className="ml-2 h-4 w-4" />
