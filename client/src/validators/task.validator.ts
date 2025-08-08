@@ -6,7 +6,6 @@ export const CreateTaskSchema = Yup.object().shape({
     status: Yup.string().oneOf(['To Do', 'In Progress', 'Done', 'Blocked'], 'Invalid status').optional(),
     assignedTo: Yup.string().required('Assigned To is required'),
     dueDate: Yup.date().required('Due Date is required'),
-    fileAttachment: Yup.string().url('Must be a valid URL').optional(),
     projectId: Yup.string().required('Project ID is required'),
 });
 
@@ -16,6 +15,5 @@ export const UpdateTaskSchema = Yup.object().shape({
     status: Yup.string().oneOf(['To Do', 'In Progress', 'Done', 'Blocked'], 'Invalid status'),
     assignedTo: Yup.string(),
     dueDate: Yup.date(),
-    fileAttachment: Yup.string().url('Must be a valid URL').optional(),
     projectId: Yup.string(),
 });

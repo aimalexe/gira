@@ -2,10 +2,24 @@
 
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { User } from "@/types/User.type";
-import { Task } from "@/types/Task.type";
+import { Button } from "@/components/Button";
+import { useState } from "react";
 
 interface TaskFormProps {
-    initialValues: Omit<Task, "Id">;
+    initialValues: {
+        title: string;
+        description: string;
+        status: string;
+        assignedTo: string;
+        dueDate: string;
+        fileAttachment?: {
+            filename: string;
+            path: string;
+            size: number;
+            mimetype: string;
+        };
+        projectId: string;
+    };
     validationSchema: any;
     onSubmit: (values: any, actions: any) => void;
     isSubmitting: boolean;
@@ -21,19 +35,30 @@ export default function TaskForm({
     isCreate,
     users = [],
 }: TaskFormProps) {
+    const [file, setFile] = useState<File | null>();
+    const [progress, setProgress] = useState(0);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = e.target.files?.[0] || null;
+        setFile(selectedFile);
+        setProgress(0);
+    };
+
     return (
         <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
-            onSubmit={onSubmit}
+            onSubmit={(values, actions) => {
+                onSubmit({ ...values, file }, actions);
+            }}
         >
             {() => (
                 <Form className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                         <div>
                             <label
                                 htmlFor="title"
-                                className="block text-sm font-medium text-indigo-800"
+                                className="block text-sm font-medium text-gray-700 mb-1"
                             >
                                 Title
                             </label>
@@ -41,140 +66,162 @@ export default function TaskForm({
                                 id="title"
                                 name="title"
                                 type="text"
-                                className="w-full p-2 mt-1 border rounded-md focus:ring focus:ring-teal-500"
+                                placeholder="Task title"
+                                className="w-full px-3 py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                             />
                             <ErrorMessage
                                 name="title"
                                 component="p"
-                                className="text-red-500 text-sm mt-1"
+                                className="text-red-500 text-xs mt-1"
                             />
                         </div>
+
                         <div>
                             <label
-                                htmlFor="assignedTo"
-                                className="block text-sm font-medium text-indigo-800"
+                                htmlFor="description"
+                                className="block text-sm font-medium text-gray-700 mb-1"
                             >
-                                Assigned To
+                                Description
                             </label>
                             <Field
-                                as="select"
-                                id="assignedTo"
-                                name="assignedTo"
-                                className="w-full p-2 mt-1 border rounded-md focus:ring focus:ring-teal-500"
-                            >
-                                <option value="">Select User</option>
-                                {users.map((user) => (
-                                    <option key={user.Id} value={user.Id}>
-                                        {user.name}
+                                as="textarea"
+                                id="description"
+                                name="description"
+                                placeholder="Task description"
+                                className="w-full px-3 py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent min-h-[100px]"
+                            />
+                            <ErrorMessage
+                                name="description"
+                                component="p"
+                                className="text-red-500 text-xs mt-1"
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label
+                                    htmlFor="status"
+                                    className="block text-sm font-medium text-gray-700 mb-1"
+                                >
+                                    Status
+                                </label>
+                                <Field
+                                    as="select"
+                                    id="status"
+                                    name="status"
+                                    className="w-full px-3 py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                                >
+                                    <option value="To Do">To Do</option>
+                                    <option value="In Progress">
+                                        In Progress
                                     </option>
-                                ))}
-                            </Field>
-                            <ErrorMessage
-                                name="assignedTo"
-                                component="p"
-                                className="text-red-500 text-sm mt-1"
-                            />
+                                    <option value="Done">Done</option>
+                                    <option value="Blocked">Blocked</option>
+                                </Field>
+                                <ErrorMessage
+                                    name="status"
+                                    component="p"
+                                    className="text-red-500 text-xs mt-1"
+                                />
+                            </div>
+
+                            <div>
+                                <label
+                                    htmlFor="assignedTo"
+                                    className="block text-sm font-medium text-gray-700 mb-1"
+                                >
+                                    Assigned To
+                                </label>
+                                <Field
+                                    as="select"
+                                    id="assignedTo"
+                                    name="assignedTo"
+                                    className="w-full px-3 py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                                >
+                                    <option value="">Unassigned</option>
+                                    {users.map((user) => (
+                                        <option key={user.Id} value={user.Id}>
+                                            {user.name}
+                                        </option>
+                                    ))}
+                                </Field>
+                                <ErrorMessage
+                                    name="assignedTo"
+                                    component="p"
+                                    className="text-red-500 text-xs mt-1"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label
+                                    htmlFor="dueDate"
+                                    className="block text-sm font-medium text-gray-700 mb-1"
+                                >
+                                    Due Date
+                                </label>
+                                <Field
+                                    id="dueDate"
+                                    name="dueDate"
+                                    type="date"
+                                    className="w-full px-3 py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                                />
+                                <ErrorMessage
+                                    name="dueDate"
+                                    component="p"
+                                    className="text-red-500 text-xs mt-1"
+                                />
+                            </div>
+
+                            <div>
+                                <label
+                                    htmlFor="fileAttachment"
+                                    className="block text-sm font-medium text-gray-700 mb-1"
+                                >
+                                    File Attachment
+                                </label>
+                                <input
+                                    id="fileAttachment"
+                                    name="fileAttachment"
+                                    type="file"
+                                    accept=".pdf,.doc,.docx,.xls,.xlsx,image/jpeg,image/png,image/gif"
+                                    onChange={(e) => handleFileChange(e)}
+                                    className="w-full px-3 py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                                />
+                                {(file || initialValues.fileAttachment) && (
+                                    <p className="text-sm text-gray-500 mt-1">
+                                        {file?.name ??
+                                            initialValues.fileAttachment
+                                                ?.filename}
+                                    </p>
+                                )}
+                                {progress > 0 && (
+                                    <div className="mt-2">
+                                        <progress
+                                            value={progress}
+                                            max="100"
+                                            className="w-full"
+                                        />
+                                        <p className="text-sm text-gray-500">
+                                            {progress}%
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <label
-                            htmlFor="description"
-                            className="block text-sm font-medium text-indigo-800"
+
+                    <div className="flex justify-end pt-4">
+                        <Button
+                            type="submit"
+                            variant="primary"
+                            isLoading={isSubmitting}
+                            className="w-full sm:w-auto"
                         >
-                            Description
-                        </label>
-                        <Field
-                            as="textarea"
-                            id="description"
-                            name="description"
-                            className="w-full p-2 mt-1 border rounded-md focus:ring focus:ring-teal-500"
-                        />
-                        <ErrorMessage
-                            name="description"
-                            component="p"
-                            className="text-red-500 text-sm mt-1"
-                        />
+                            {isCreate ? "Create Task" : "Update Task"}
+                        </Button>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label
-                                htmlFor="status"
-                                className="block text-sm font-medium text-indigo-800"
-                            >
-                                Status
-                            </label>
-                            <Field
-                                as="select"
-                                id="status"
-                                name="status"
-                                className="w-full p-2 mt-1 border rounded-md focus:ring focus:ring-teal-500"
-                            >
-                                <option value="To Do">To Do</option>
-                                <option value="In Progress">In Progress</option>
-                                <option value="Done">Done</option>
-                                <option value="Blocked">Blocked</option>
-                            </Field>
-                            <ErrorMessage
-                                name="status"
-                                component="p"
-                                className="text-red-500 text-sm mt-1"
-                            />
-                        </div>
-                        <div>
-                            <label
-                                htmlFor="dueDate"
-                                className="block text-sm font-medium text-indigo-800"
-                            >
-                                Due Date
-                            </label>
-                            <Field
-                                id="dueDate"
-                                name="dueDate"
-                                type="date"
-                                className="w-full p-2 mt-1 border rounded-md focus:ring focus:ring-teal-500"
-                            />
-                            <ErrorMessage
-                                name="dueDate"
-                                component="p"
-                                className="text-red-500 text-sm mt-1"
-                            />
-                        </div>
-                    </div>
-                    <div>
-                        <label
-                            htmlFor="fileAttachment"
-                            className="block text-sm font-medium text-indigo-800"
-                        >
-                            File Attachment (URL)
-                        </label>
-                        <Field
-                            id="fileAttachment"
-                            name="fileAttachment"
-                            type="url"
-                            className="w-full p-2 mt-1 border rounded-md focus:ring focus:ring-teal-500"
-                            placeholder="Optional file URL"
-                        />
-                        <ErrorMessage
-                            name="fileAttachment"
-                            component="p"
-                            className="text-red-500 text-sm mt-1"
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className={`mx-auto w-[50%] p-2 ${
-                            isCreate ? "bg-teal-500" : "bg-indigo-600"
-                        } text-white rounded-md hover:bg-opacity-90 disabled:opacity-50`}
-                    >
-                        {isSubmitting
-                            ? isCreate
-                                ? "Creating..."
-                                : "Updating..."
-                            : isCreate
-                            ? "Create Task"
-                            : "Update"}
-                    </button>
                 </Form>
             )}
         </Formik>

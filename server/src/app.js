@@ -5,6 +5,7 @@ const cors = require('cors')
 const connectDB = require('./configs/db.config');
 const { router } = require('./routes');
 const { convertSnakeToCamelMiddleware } = require('./middlewares/convert-snack-to-camel.middleware');
+const path = require("node:path");
 
 const app = express();
 
@@ -25,9 +26,11 @@ const corsOptions = {
     credentials: true
 };
 
+
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors(corsOptions))
+app.use(cors(corsOptions));
+app.use('/uploads', express.static(path.join(__dirname, "../", "uploads")));
 app.use(convertSnakeToCamelMiddleware);
 
 connectDB();

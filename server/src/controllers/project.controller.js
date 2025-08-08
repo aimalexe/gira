@@ -1,6 +1,6 @@
 const Project = require('../models/Project.model');
+const Task = require('../models/Task.model');
 const User = require('../models/User.model');
-const { AppError } = require('../middlewares/auth.middleware');
 
 const createProject = async (req, res) => {
     const { name, description, members } = req.validatedData;
@@ -27,7 +27,7 @@ const createProject = async (req, res) => {
 
 const getAllProjects = async (req, res) => {
     const query = req.user.role === 'admin'
-        ? {}
+        ? { $or: [{ created_by: req.user._id }, { members: req.user._id }] }
         : { members: req.user._id };
 
     const projects = await Project.find(query).populate('created_by', 'name email').populate('members', 'name email');
@@ -74,15 +74,52 @@ const updateProject = async (req, res) => {
     res.status(200).json({ status: 'success', data: project });
 };
 
+/* //* Transaction code not supported in standalone mongo
 const deleteProject = async (req, res) => {
-    const project = await Project.findByIdAndDelete(req.params.id);
-    if (!project)
-        return res.status(400).json({
-            success: false,
-            message: 'Project not found'
-        })
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+        const project = await Project.findById(req.params.id).session(session);
+        if (!project) {
+            await session.abortTransaction();
+            session.endSession();
+            return res.status(400).json({
+                success: false,
+                message: 'Project not found'
+            });
+        }
 
-    res.status(204).json({ status: 'success', message: "project deleted successfully", data: null });
+        await Task.deleteMany({ project: req.params.id }).session(session);
+        await Project.findByIdAndDelete(req.params.id).session(session);
+
+        await session.commitTransaction();
+        session.endSession();
+        res.status(204).json({ status: 'success', message: "project deleted successfully", data: null });
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        return res.status(500).json({ status: 'error', message: 'Failed to delete project and tasks' });
+    }
+}; */
+
+const deleteProject = async (req, res) => {
+    try {
+        const project = await Project.findById(req.params.id);
+        if (!project) {
+            return res.status(400).json({
+                success: false,
+                message: 'Project not found'
+            });
+        }
+
+        await Task.deleteMany({ project: req.params.id });
+        await Project.findByIdAndDelete(req.params.id);
+
+        res.status(204).json({ status: 'success', message: "project deleted successfully", data: null });
+    } catch (error) {
+        console.log("🚀 ~ deleteProject ~ error:", error)
+        return res.status(500).json({ status: 'error', message: 'Failed to delete project and tasks' });
+    }
 };
 
 const addMember = async (req, res) => {
@@ -116,7 +153,7 @@ const addMember = async (req, res) => {
 const removeMember = async (req, res) => {
     const { userIds } = req.validatedData;
     const project = await Project.findById(req.params.id).populate('created_by', 'name email');
-    if (!project) 
+    if (!project)
         return res.status(400).json({
             success: false,
             message: 'Project not found'
