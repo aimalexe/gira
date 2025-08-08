@@ -1,9 +1,12 @@
 const Task = require('../models/Task.model');
 const Project = require('../models/Project.model');
 const User = require('../models/User.model');
+const fs = require("node:fs/promises");
+const path = require("node:path");
+const { safeDelete } = require('../utils/safe-delete-file.util');
 
 const createTask = async (req, res) => {
-    const { title, description, status, assigned_to, due_date, file_attachment, project } = req.validatedData;
+    const { title, description, status, assigned_to, due_date, project } = req.validatedData;
     const created_by = req.user._id;
 
     const projectDoc = await Project.findById(project);
@@ -22,6 +25,17 @@ const createTask = async (req, res) => {
     if (!projectDoc.members.includes(assigned_to)) {
         return res.status(400).json({ status: 'error', message: 'Assigned user is not a project member' });
     }
+
+    const file_attachment = req.file
+        ? {
+            filename: req.file.filename,
+            path: req.file.path,
+            size: req.file.size,
+            mimetype: req.file.mimetype,
+        }
+        : null;
+    console.log("🚀 ~ createTask ~ file_attachment:", file_attachment)
+    console.log("🚀 ~ createTask ~ req.file:", req.file)
 
     const task = new Task({
         title,
@@ -141,47 +155,71 @@ const updateTask = async (req, res) => {
 
     const project = await Project.findById(projectId);
     if (!project) {
-        return res.status(404).json({ status: 'error', message: 'Project not found' });
+        return res.status(404).json({ status: "error", message: "Project not found" });
     }
 
     const task = await Task.findById(id);
     if (!task) {
-        return res.status(404).json({ status: 'error', message: 'Task not found' });
+        return res.status(404).json({ status: "error", message: "Task not found" });
     }
 
     const isTaskCreator = task.created_by.toString() === req.user._id.toString();
     const isAssigned = task.assigned_to.toString() === req.user._id.toString();
     const isProjectCreator = project.created_by.toString() === req.user._id.toString();
-    if (req.user.role !== 'admin' && !isProjectCreator && !isTaskCreator && !isAssigned) {
-        return res.status(403).json({ status: 'error', message: 'Access denied: Not authorized to update this task' });
+    if (req.user.role !== "admin" && !isProjectCreator && !isTaskCreator && !isAssigned) {
+        return res.status(403).json({ status: "error", message: "Access denied" });
     }
 
     if (assigned_to) {
         const user = await User.findById(assigned_to);
         if (!user) {
-            return res.status(400).json({ status: 'error', message: 'Assigned user not found' });
+            return res.status(400).json({ status: "error", message: "Assigned user not found" });
         }
         if (!project.members.includes(assigned_to)) {
-            return res.status(400).json({ status: 'error', message: 'Assigned user is not a project member' });
+            return res.status(400).json({ status: "error", message: "Assigned user is not a project member" });
         }
     }
 
-    const updateData = { ...req.validatedData, updated_by: req.user._id };
+    let fileAttachment = task.file_attachment;
+
+    if (req.file) {
+        const isDifferentFile =
+            !fileAttachment ||
+            fileAttachment.size !== req.file.size ||
+            fileAttachment.mimetype !== req.file.mimetype;
+
+        if (isDifferentFile) {
+            if(fileAttachment?.path) await safeDelete(fileAttachment?.path);
+
+            fileAttachment = {
+                filename: req.file.filename,
+                path: req.file.path,
+                size: req.file.size,
+                mimetype: req.file.mimetype,
+            };
+        }
+    }
+
     const updatedTask = await Task.findByIdAndUpdate(
         id,
-        updateData,
+        {
+            ...req.validatedData,
+            updated_by: req.user._id,
+            file_attachment: fileAttachment,
+        },
         { new: true, runValidators: true }
     );
 
     await updatedTask.populate([
-        { path: 'assigned_to', select: 'name email' },
-        { path: 'created_by', select: 'name email' },
-        { path: 'updated_by', select: 'name email' },
-        { path: 'project', select: 'name' }
+        { path: "assigned_to", select: "name email" },
+        { path: "created_by", select: "name email" },
+        { path: "updated_by", select: "name email" },
+        { path: "project", select: "name" },
     ]);
 
-    res.status(200).json({ status: 'success', data: updatedTask });
+    res.status(200).json({ status: "success", data: updatedTask });
 };
+
 
 const deleteTask = async (req, res) => {
     const { projectId, id } = req.params;
@@ -203,6 +241,9 @@ const deleteTask = async (req, res) => {
         return res.status(403).json({ status: 'error', message: 'Access denied: Not authorized to delete this task' });
     }
 
+    if (task.file_attachment?.path) {
+        safeDelete(task.file_attachment?.path)
+    }
     await Task.findByIdAndDelete(id);
     res.status(204).json({ status: 'success', data: null });
 };

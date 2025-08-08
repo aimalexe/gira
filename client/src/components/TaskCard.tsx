@@ -85,7 +85,7 @@ export default function TaskCard({
                         {task.fileAttachment && (
                             <div className="mt-3">
                                 <a
-                                    href={task.fileAttachment}
+                                    href={`http://localhost:5000/${task.fileAttachment?.path}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-sm text-blue-600 hover:underline"

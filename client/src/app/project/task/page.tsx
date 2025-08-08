@@ -81,16 +81,22 @@ export default function TaskPage() {
         { setSubmitting, resetForm }: FormikHelpers<any>
     ) => {
         try {
-            const data = {
-                title: values.title,
-                description: values.description,
-                status: values.status,
-                assigned_to: values.assignedTo,
-                due_date: values.dueDate,
-                file_attachment: values.fileAttachment,
-                project: projectId,
-            };
-            await api.post("/task", data);
+            const formData = new FormData();
+            formData.append("title", values.title);
+            formData.append("description", values.description);
+            formData.append("status", values.status);
+            formData.append("assigned_to", values.assignedTo);
+            formData.append("due_date", values.dueDate);
+            formData.append("project", projectId);
+            if (values.file) {
+                formData.append("file_attachment", values.file);
+            }
+
+            await api.post("/task", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
             resetForm();
             fetchTasks();
             setError("");
@@ -106,15 +112,19 @@ export default function TaskPage() {
         { setSubmitting }: FormikHelpers<any>
     ) => {
         try {
-            const data = {
-                title: values.title,
-                description: values.description,
-                status: values.status,
-                assigned_to: values.assignedTo,
-                due_date: values.dueDate,
-                file_attachment: values.fileAttachment,
-            };
-            await api.put(`/task/${projectId}/${currentTask?.Id}`, data);
+            const formData = new FormData();
+            formData.append("title", values.title);
+            formData.append("description", values.description);
+            formData.append("status", values.status);
+            formData.append("assigned_to", values.assignedTo);
+            formData.append("due_date", values.dueDate);
+            if (values.file) {
+                formData.append("file_attachment", values.file);
+            }
+
+            await api.put(`/task/${projectId}/${currentTask?.Id}`, formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
             setCurrentTask(null);
             fetchTasks();
             setError("");
@@ -168,9 +178,6 @@ export default function TaskPage() {
                 )}
 
                 <div className="mb-6 bg-gray-50 p-4 rounded-lg">
-                    {/* <h2 className="text-lg font-semibold mb-3 text-gray-800">
-                        Filters
-                    </h2> */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -267,7 +274,7 @@ export default function TaskPage() {
                         status: currentTask?.status || "To Do",
                         assignedTo: currentTask?.assignedTo?.Id ?? "",
                         dueDate: currentTask?.dueDate?.split("T")[0] || "",
-                        fileAttachment: currentTask?.fileAttachment || "",
+                        fileAttachment: currentTask?.fileAttachment,
                         projectId: projectId,
                     }}
                     validationSchema={
