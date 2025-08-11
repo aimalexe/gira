@@ -1,6 +1,15 @@
 const mongoose = require('mongoose');
 const { Schema } = require('mongoose');
 
+const fileAttachmentSchema = new Schema({
+    filename: { type: String, trim: true, default: '' },
+    path: { type: String, trim: true, default: '' },
+    size: { type: Number, default: 0 },
+    mimetype: { type: String, trim: true, default: '' },
+},
+    { _id: false }
+);
+
 const taskSchema = new Schema({
     title: {
         type: String,
@@ -40,10 +49,8 @@ const taskSchema = new Schema({
         required: [true, 'Due date is required'],
     },
     file_attachment: {
-        type: String,
-        trim: true,
-        maxlength: [200, 'File attachment URL cannot exceed 200 characters'],
-        default: '',
+        type: fileAttachmentSchema,
+        default: null
     },
     project: {
         type: Schema.Types.ObjectId,

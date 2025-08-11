@@ -17,6 +17,7 @@ import TaskForm from "@/components/TaskForm";
 import Pagination from "@/components/Pagination";
 import { FormikHelpers } from "formik";
 import { PlusCircleIcon } from "@heroicons/react/20/solid";
+import { ConfirmModal } from "@/components/ConfirmModal";
 
 export default function TaskPage() {
     const { user } = useAuthStore();
@@ -43,6 +44,13 @@ export default function TaskPage() {
     const [error, setError] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentTask, setCurrentTask] = useState<Task | null>(null);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
+    const [confirmTitle, setConfirmTitle] = useState("");
+    const [confirmMessage, setConfirmMessage] = useState("");
+    const [confirmVariant, setConfirmVariant] = useState<
+        "primary" | "secondary" | "danger" | "success" | "ghost"
+    >("primary");
 
     useEffect(() => {
         if (user && projectId) {
@@ -81,16 +89,22 @@ export default function TaskPage() {
         { setSubmitting, resetForm }: FormikHelpers<any>
     ) => {
         try {
-            const data = {
-                title: values.title,
-                description: values.description,
-                status: values.status,
-                assigned_to: values.assignedTo,
-                due_date: values.dueDate,
-                file_attachment: values.fileAttachment,
-                project: projectId,
-            };
-            await api.post("/task", data);
+            const formData = new FormData();
+            formData.append("title", values.title);
+            formData.append("description", values.description);
+            formData.append("status", values.status);
+            formData.append("assigned_to", values.assignedTo);
+            formData.append("due_date", values.dueDate);
+            formData.append("project", projectId);
+            if (values.file) {
+                formData.append("file_attachment", values.file);
+            }
+
+            await api.post("/task", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
             resetForm();
             fetchTasks();
             setError("");
@@ -106,15 +120,19 @@ export default function TaskPage() {
         { setSubmitting }: FormikHelpers<any>
     ) => {
         try {
-            const data = {
-                title: values.title,
-                description: values.description,
-                status: values.status,
-                assigned_to: values.assignedTo,
-                due_date: values.dueDate,
-                file_attachment: values.fileAttachment,
-            };
-            await api.put(`/task/${projectId}/${currentTask?.Id}`, data);
+            const formData = new FormData();
+            formData.append("title", values.title);
+            formData.append("description", values.description);
+            formData.append("status", values.status);
+            formData.append("assigned_to", values.assignedTo);
+            formData.append("due_date", values.dueDate);
+            if (values.file) {
+                formData.append("file_attachment", values.file);
+            }
+
+            await api.put(`/task/${projectId}/${currentTask?.Id}`, formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
             setCurrentTask(null);
             fetchTasks();
             setError("");
@@ -126,7 +144,10 @@ export default function TaskPage() {
     };
 
     const handleDeleteTask = async (taskId: string) => {
-        if (confirm("Are you sure you want to delete this task?")) {
+        setConfirmTitle("Delete Task");
+        setConfirmMessage("Are you sure you want to delete this task?");
+        setConfirmVariant("danger");
+        setConfirmAction(() => async () => {
             try {
                 await api.delete(`/task/${projectId}/${taskId}`);
                 fetchTasks();
@@ -135,7 +156,8 @@ export default function TaskPage() {
                     err.response?.data?.message || "Failed to delete task"
                 );
             }
-        }
+        });
+        setConfirmOpen(true);
     };
 
     if (!user || !projectId) {
@@ -168,9 +190,6 @@ export default function TaskPage() {
                 )}
 
                 <div className="mb-6 bg-gray-50 p-4 rounded-lg">
-                    <h2 className="text-lg font-semibold mb-3 text-gray-800">
-                        Filters
-                    </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -267,7 +286,7 @@ export default function TaskPage() {
                         status: currentTask?.status || "To Do",
                         assignedTo: currentTask?.assignedTo?.Id ?? "",
                         dueDate: currentTask?.dueDate?.split("T")[0] || "",
-                        fileAttachment: currentTask?.fileAttachment || "",
+                        fileAttachment: currentTask?.fileAttachment,
                         projectId: projectId,
                     }}
                     validationSchema={
@@ -279,6 +298,14 @@ export default function TaskPage() {
                     users={members}
                 />
             </Modal>
+            <ConfirmModal
+                isOpen={confirmOpen}
+                onClose={() => setConfirmOpen(false)}
+                onConfirm={confirmAction}
+                title={confirmTitle}
+                message={confirmMessage}
+                confirmVariant={confirmVariant}
+            />
         </div>
     );
 }

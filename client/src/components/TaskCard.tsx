@@ -12,6 +12,7 @@ import {
 } from "@heroicons/react/20/solid";
 import Avatar from "@/components/Avatar";
 import { statusColors } from "@/constants/statusColors.const";
+import { useAuthStore } from "@/lib/auth";
 
 interface TaskCardProps {
     task: Task;
@@ -29,6 +30,7 @@ export default function TaskCard({
     const assignedUser = members.find((m) => m.Id === task.assignedTo?.Id);
     const statusColor =
         statusColors[task.status] || "bg-gray-200 text-gray-800";
+    const { user } = useAuthStore();
 
     return (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
@@ -85,7 +87,7 @@ export default function TaskCard({
                         {task.fileAttachment && (
                             <div className="mt-3">
                                 <a
-                                    href={task.fileAttachment}
+                                    href={`http://localhost:5000/${task.fileAttachment?.path}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-sm text-blue-600 hover:underline"
@@ -136,21 +138,23 @@ export default function TaskCard({
                                             </button>
                                         )}
                                     </Menu.Item>
-                                    <Menu.Item>
-                                        {({ active }) => (
-                                            <button
-                                                onClick={onDelete}
-                                                className={`${
-                                                    active
-                                                        ? "bg-gray-100 text-red-600"
-                                                        : "text-red-600"
-                                                } flex items-center w-full px-4 py-2 text-sm`}
-                                            >
-                                                <TrashIcon className="h-4 w-4 mr-2" />
-                                                Delete Task
-                                            </button>
-                                        )}
-                                    </Menu.Item>
+                                    {user?.role === "admin" &&(
+                                        <Menu.Item>
+                                            {({ active }) => (
+                                                <button
+                                                    onClick={onDelete}
+                                                    className={`${
+                                                        active
+                                                            ? "bg-gray-100 text-red-600"
+                                                            : "text-red-600"
+                                                    } flex items-center w-full px-4 py-2 text-sm`}
+                                                >
+                                                    <TrashIcon className="h-4 w-4 mr-2" />
+                                                    Delete Task
+                                                </button>
+                                            )}
+                                        </Menu.Item>
+                                    )}
                                 </div>
                             </Menu.Items>
                         </Transition>

@@ -1,5 +1,3 @@
-import { UserWithUnderscoreId } from "./User.type";
-
 export interface Task {
     Id: string;
     title: string;
@@ -8,8 +6,13 @@ export interface Task {
     assignedTo?: {
         Id: string;
         name: string
-    }; 
+    };
     dueDate: string;
-    fileAttachment: string;
+    fileAttachment?: {
+        filename: string;
+        path: string;
+        size: number;
+        mimetype: string;
+    }
     projectId: string;
 }

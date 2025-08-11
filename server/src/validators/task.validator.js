@@ -6,7 +6,6 @@ const title = Joi.string().trim().min(2).max(100);
 const description = Joi.string().trim().max(500).allow('');
 const status = Joi.string().valid(...STATUSES);
 const due_date = Joi.date().iso().greater('now');
-const file_attachment = Joi.string().uri().trim().max(200).allow('').optional();
 
 const validateCreateTask = (data) => {
     const schema = Joi.object({
@@ -15,7 +14,12 @@ const validateCreateTask = (data) => {
         status: status.default('To Do'),
         assigned_to: objectId.required(),
         due_date: due_date.required(),
-        file_attachment: file_attachment,
+        // file_attachment: Joi.object({
+        //     filename: Joi.string().trim().allow('').default(''),
+        //     path: Joi.string().trim().allow('').default(''),
+        //     size: Joi.number().min(0).default(0),
+        //     mimetype: Joi.string().trim().allow('').default(''),
+        // }).default({ filename: '', path: '', size: 0, mimetype: '' }),
         project: objectId.required(),
     });
 
@@ -30,7 +34,7 @@ const validateUpdateTask = (data) => {
         assigned_to: objectId.optional(),
         updated_by: objectId.optional(),
         due_date: due_date.optional(),
-        file_attachment: file_attachment,
+        // file_attachment: Joi.string().allow(null, "").optional(),
         project: objectId.optional(),
     }).min(1);
 

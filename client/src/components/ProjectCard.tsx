@@ -32,19 +32,19 @@ export default function ProjectCard({
     users,
     currentUser,
 }: ProjectCardProps) {
+    const params = new URLSearchParams({
+        projectId: project.Id,
+        members: JSON.stringify(
+            project.members?.map(({ Id, name }) => ({ Id, name })) || []
+        ),
+    });
+
     return (
         <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
             <div className="flex-col p-3 md:p-6">
                 <div className="flex justify-between items-start">
                     <Link
-                        href={`/project/task?projectId=${
-                            project.Id
-                        }&members=${JSON.stringify(
-                            project.members?.map(({ Id, name }) => ({
-                                Id,
-                                name,
-                            }))
-                        )}`}
+                        href={`/project/task?${params.toString()}`}
                         className="flex items-center justify-center gap-2 group"
                     >
                         <h3 className="text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
@@ -160,7 +160,7 @@ export default function ProjectCard({
                 {currentUser.role === "admin" && (
                     <div className="self-baseline mt-4 pt-4 border-t border-gray-100">
                         <Menu as="div" className="relative">
-                            <Menu.Button className="inline-flex w-full justify-center rounded-md bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-100">
+                            <Menu.Button className="inline-flex w-full justify-center rounded-md bg-gray-50 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-blue-100">
                                 <UserPlusIcon className="h-4 w-4 mr-2" />
                                 Add Team Member
                                 <ChevronDownIcon className="ml-2 h-4 w-4" />

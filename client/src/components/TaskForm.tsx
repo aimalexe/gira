@@ -3,6 +3,7 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { User } from "@/types/User.type";
 import { Button } from "@/components/Button";
+import { useState } from "react";
 
 interface TaskFormProps {
     initialValues: {
@@ -11,7 +12,12 @@ interface TaskFormProps {
         status: string;
         assignedTo: string;
         dueDate: string;
-        fileAttachment: string;
+        fileAttachment?: {
+            filename: string;
+            path: string;
+            size: number;
+            mimetype: string;
+        };
         projectId: string;
     };
     validationSchema: any;
@@ -29,11 +35,22 @@ export default function TaskForm({
     isCreate,
     users = [],
 }: TaskFormProps) {
+    const [file, setFile] = useState<File | null>();
+    const [progress, setProgress] = useState(0);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = e.target.files?.[0] || null;
+        setFile(selectedFile);
+        setProgress(0);
+    };
+
     return (
         <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
-            onSubmit={onSubmit}
+            onSubmit={(values, actions) => {
+                onSubmit({ ...values, file }, actions);
+            }}
         >
             {() => (
                 <Form className="space-y-4">
@@ -95,7 +112,9 @@ export default function TaskForm({
                                     className="w-full px-3 py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                                 >
                                     <option value="To Do">To Do</option>
-                                    <option value="In Progress">In Progress</option>
+                                    <option value="In Progress">
+                                        In Progress
+                                    </option>
                                     <option value="Done">Done</option>
                                     <option value="Blocked">Blocked</option>
                                 </Field>
@@ -160,20 +179,35 @@ export default function TaskForm({
                                     htmlFor="fileAttachment"
                                     className="block text-sm font-medium text-gray-700 mb-1"
                                 >
-                                    File Attachment (URL)
+                                    File Attachment
                                 </label>
-                                <Field
+                                <input
                                     id="fileAttachment"
                                     name="fileAttachment"
-                                    type="url"
-                                    placeholder="Optional file URL"
+                                    type="file"
+                                    accept=".pdf,.doc,.docx,.xls,.xlsx,image/jpeg,image/png,image/gif"
+                                    onChange={(e) => handleFileChange(e)}
                                     className="w-full px-3 py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                                 />
-                                <ErrorMessage
-                                    name="fileAttachment"
-                                    component="p"
-                                    className="text-red-500 text-xs mt-1"
-                                />
+                                {(file || initialValues.fileAttachment) && (
+                                    <p className="text-sm text-gray-500 mt-1">
+                                        {file?.name ??
+                                            initialValues.fileAttachment
+                                                ?.filename}
+                                    </p>
+                                )}
+                                {progress > 0 && (
+                                    <div className="mt-2">
+                                        <progress
+                                            value={progress}
+                                            max="100"
+                                            className="w-full"
+                                        />
+                                        <p className="text-sm text-gray-500">
+                                            {progress}%
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
