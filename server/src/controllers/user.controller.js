@@ -30,7 +30,7 @@ const createUser = async (req, res, next) => {
 const getAllUsers = async (req, res, next) => {
     try {
         const { name, email, role, pageNo = 1, itemsPerPage = 20 } = req.validatedQuery || req.query;
-        const query = {};
+        const query = { created_by: req.user._id };
         if (name) query.name = { $regex: name, $options: 'i' };
         if (email) query.email = { $regex: email, $options: 'i' };
         if (role) query.role = Array.isArray(role) ? { $in: role } : role;
@@ -39,7 +39,7 @@ const getAllUsers = async (req, res, next) => {
             .select('-password')
             .skip((pageNo - 1) * itemsPerPage)
             .limit(parseInt(itemsPerPage));
-            const total = await User.countDocuments(query);
+        const total = await User.countDocuments(query);
 
         return res.status(200).json({
             status: 'success',
@@ -82,7 +82,7 @@ const updateUser = async (req, res, next) => {
         if (req.user.role !== 'admin' && req.user._id.toString() !== id) {
             return res.status(403).json({
                 status: 'error',
-                message: 'Forbidden: Cannot delete other users'
+                message: 'Forbidden: Cannot update other users'
             });
         }
 
@@ -94,7 +94,7 @@ const updateUser = async (req, res, next) => {
             });
         }
 
-        const { email } = req.validatedData;
+        const { email, password, ...otherData } = req.validatedData;
         if (email) {
             const isEmailPresent = await User.findOne({ email, _id: { $ne: id } });
             if (isEmailPresent) return res.status(404).json({
@@ -103,16 +103,18 @@ const updateUser = async (req, res, next) => {
             });
         }
 
-        const updatedUser = await User.findByIdAndUpdate(
-            id,
-            { ...req.validatedData, updated_by: req?.user._id ??  null },
-            { new: true, runValidators: true }
-        ).select('-password');
+        Object.assign(user, { ...otherData, email, updated_by: req?.user._id ?? null });
+        if (password) {
+            user.password = password;
+        }
+
+        const updatedUser = await user.save();
+        const { password: _, ...userWithoutPassword } = updatedUser.toObject();
 
         return res.status(200).json({
             status: 'success',
             message: 'User updated',
-            user: updatedUser
+            user: userWithoutPassword
         });
     } catch (error) {
         next(error);

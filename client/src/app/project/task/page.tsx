@@ -2,15 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormikHelpers } from "formik";
 import { useAuthStore } from "@/lib/auth";
 import api from "@/lib/api";
-import TaskForm from "@/components/TaskForm";
-import TaskListItem from "@/components/TaskListItem";
-import Pagination from "@/components/Pagination";
-import { CreateTaskSchema } from "@/validators/task.validator";
+import TaskCard from "@/components/TaskCard";
+import {
+    CreateTaskSchema,
+    UpdateTaskSchema,
+} from "@/validators/task.validator";
 import { User } from "@/types/User.type";
 import { Task } from "@/types/Task.type";
+import { Button } from "@/components/Button";
+import { Modal } from "@/components/Modal";
+import TaskForm from "@/components/TaskForm";
+import Pagination from "@/components/Pagination";
+import { FormikHelpers } from "formik";
+import { PlusCircleIcon } from "@heroicons/react/20/solid";
 
 export default function TaskPage() {
     const { user } = useAuthStore();
@@ -24,15 +30,19 @@ export default function TaskPage() {
     const [pagination, setPagination] = useState({
         total: 0,
         pageNo: 1,
-        limit: 5,
-        itemsPerPage: 1,
+        limit: 10,
+        itemsPerPage: 10,
     });
     const [filters, setFilters] = useState<{
         assignedTo?: string;
         status?: string;
-    }>({ assignedTo: "", status: "" });
+    }>({
+        assignedTo: "",
+        status: "",
+    });
     const [error, setError] = useState("");
-    const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentTask, setCurrentTask] = useState<Task | null>(null);
 
     useEffect(() => {
         if (user && projectId) {
@@ -62,7 +72,6 @@ export default function TaskPage() {
             });
             setError("");
         } catch (err: any) {
-            console.log("🚀 ~ fetchTasks ~ err:", err);
             setError(err.response?.data?.message || "Failed to fetch tasks");
         }
     };
@@ -85,6 +94,7 @@ export default function TaskPage() {
             resetForm();
             fetchTasks();
             setError("");
+            setIsModalOpen(false);
         } catch (err: any) {
             setError(err.response?.data?.message || "Failed to create task");
             setSubmitting(false);
@@ -95,20 +105,20 @@ export default function TaskPage() {
         values: any,
         { setSubmitting }: FormikHelpers<any>
     ) => {
-        const data = {
-            title: values.title,
-            description: values.description,
-            status: values.status,
-            assigned_to: values.assignedTo,
-            due_date: values.dueDate,
-            fileAttachment: values.fileAttachment,
-            project: values.project,
-        };
         try {
-            await api.put(`/task/${projectId}/${editingTaskId}`, data);
-            setEditingTaskId(null);
+            const data = {
+                title: values.title,
+                description: values.description,
+                status: values.status,
+                assigned_to: values.assignedTo,
+                due_date: values.dueDate,
+                file_attachment: values.fileAttachment,
+            };
+            await api.put(`/task/${projectId}/${currentTask?.Id}`, data);
+            setCurrentTask(null);
             fetchTasks();
             setError("");
+            setIsModalOpen(false);
         } catch (err: any) {
             setError(err.response?.data?.message || "Failed to update task");
             setSubmitting(false);
@@ -133,106 +143,142 @@ export default function TaskPage() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto mt-10 p-6 bg-gray-100 rounded-lg shadow-md">
-            <h1 className="text-3xl font-bold mb-6 text-center text-indigo-800 font-michroma">
-                Manage Tasks for Project
-            </h1>
-            <div className="mb-8">
-                <h2 className="text-xl font-semibold mb-4 text-indigo-800">
-                    Create New Task
-                </h2>
-                <TaskForm
-                    initialValues={{
-                        title: "",
-                        description: "",
-                        status: "To Do",
-                        dueDate: "",
-                        fileAttachment: "",
-                        projectId,
-                    }}
-                    validationSchema={CreateTaskSchema}
-                    onSubmit={handleCreateTask}
-                    isSubmitting={false}
-                    isCreate={true}
-                    users={members}
-                />
-            </div>
-            <div className="mb-4">
-                <h2 className="text-xl font-semibold mb-2 text-indigo-800">
-                    Filters
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label
-                            htmlFor="filterAssignedTo"
-                            className="block text-sm font-medium text-indigo-800"
-                        >
-                            Assigned To
-                        </label>
-                        <select
-                            id="filterAssignedTo"
-                            value={filters.assignedTo}
-                            onChange={(e) =>
-                                setFilters({
-                                    ...filters,
-                                    assignedTo: e.target.value,
-                                })
-                            }
-                            className="w-full p-2 mt-1 border rounded-md focus:ring focus:ring-teal-500"
-                        >
-                            <option value="">All</option>
-                            {members.map((member) => (
-                                <option key={member.Id} value={member.Id}>
-                                    {member.name}
-                                </option>
-                            ))}
-                        </select>
+        <div className="w-full md:max-w-6xl mx-auto p-2">
+            <div className="bg-white/80 backdrop-blur-sm overflow-hidden p-6">
+                <div className="flex justify-between items-center mb-8 flex-wrap">
+                    <h1 className="text-2xl font-bold text-gray-800">
+                        Task Management
+                    </h1>
+                    <Button
+                        variant="primary"
+                        onClick={() => {
+                            setCurrentTask(null);
+                            setIsModalOpen(true);
+                        }}
+                    >
+                        <PlusCircleIcon className="h-5 w-5 text-white" /> Create
+                        New Task
+                    </Button>
+                </div>
+
+                {error && (
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
+                        {error}
                     </div>
-                    <div>
-                        <label
-                            htmlFor="filterStatus"
-                            className="block text-sm font-medium text-indigo-800"
-                        >
-                            Status
-                        </label>
-                        <select
-                            id="filterStatus"
-                            value={filters.status}
-                            onChange={(e) =>
-                                setFilters({
-                                    ...filters,
-                                    status: e.target.value,
-                                })
-                            }
-                            className="w-full p-2 mt-1 border rounded-md focus:ring focus:ring-teal-500"
-                        >
-                            <option value="">All</option>
-                            <option value="To Do">To Do</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Done">Done</option>
-                            <option value="Blocked">Blocked</option>
-                        </select>
+                )}
+
+                <div className="mb-6 bg-gray-50 p-4 rounded-lg">
+                    <h2 className="text-lg font-semibold mb-3 text-gray-800">
+                        Filters
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Assigned To
+                            </label>
+                            <select
+                                value={filters.assignedTo}
+                                onChange={(e) =>
+                                    setFilters({
+                                        ...filters,
+                                        assignedTo: e.target.value,
+                                    })
+                                }
+                                className="w-full px-3 py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                            >
+                                <option value="">All Members</option>
+                                {members.map((member) => (
+                                    <option key={member.Id} value={member.Id}>
+                                        {member.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Status
+                            </label>
+                            <select
+                                value={filters.status}
+                                onChange={(e) =>
+                                    setFilters({
+                                        ...filters,
+                                        status: e.target.value,
+                                    })
+                                }
+                                className="w-full px-3 py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                            >
+                                <option value="">All Statuses</option>
+                                <option value="To Do">To Do</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Done">Done</option>
+                                <option value="Blocked">Blocked</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <h2 className="text-xl font-semibold mb-4 text-indigo-800">
-                Tasks
-            </h2>
-            {error && <p className="text-red-500 mb-4">{error}</p>}
-            <div className="space-y-4">
-                {tasks.map((task) => (
-                    <TaskListItem
-                        key={task.Id}
-                        task={task}
-                        editingTaskId={editingTaskId}
-                        setEditingTaskId={setEditingTaskId}
-                        handleUpdateTask={handleUpdateTask}
-                        handleDeleteTask={handleDeleteTask}
-                        users={members}
+
+                <div className="space-y-4">
+                    {tasks.length > 0 ? (
+                        tasks.map((task) => (
+                            <TaskCard
+                                key={task.Id}
+                                task={task}
+                                onEdit={() => {
+                                    setCurrentTask(task);
+                                    setIsModalOpen(true);
+                                }}
+                                onDelete={() => handleDeleteTask(task.Id)}
+                                members={members}
+                            />
+                        ))
+                    ) : (
+                        <div className="p-6 text-center text-gray-500 bg-white rounded-lg border border-gray-200">
+                            No tasks found
+                        </div>
+                    )}
+                </div>
+
+                <div className="mt-6">
+                    <Pagination
+                        pagination={pagination}
+                        setPagination={setPagination}
                     />
-                ))}
+                </div>
             </div>
-            <Pagination pagination={pagination} setPagination={setPagination} />
+
+            {/* Task Form Modal */}
+            <Modal
+                isOpen={isModalOpen}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setCurrentTask(null);
+                }}
+                title={
+                    currentTask
+                        ? `Edit Task: ${currentTask.title}`
+                        : "Create New Task"
+                }
+            >
+                <TaskForm
+                    initialValues={{
+                        title: currentTask?.title || "",
+                        description: currentTask?.description || "",
+                        status: currentTask?.status || "To Do",
+                        assignedTo: currentTask?.assignedTo?.Id ?? "",
+                        dueDate: currentTask?.dueDate?.split("T")[0] || "",
+                        fileAttachment: currentTask?.fileAttachment || "",
+                        projectId: projectId,
+                    }}
+                    validationSchema={
+                        currentTask ? UpdateTaskSchema : CreateTaskSchema
+                    }
+                    onSubmit={currentTask ? handleUpdateTask : handleCreateTask}
+                    isSubmitting={false}
+                    isCreate={!currentTask}
+                    users={members}
+                />
+            </Modal>
         </div>
     );
 }
