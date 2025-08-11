@@ -1,55 +1,143 @@
-# Gira
+# Gira 📋
 
-Gira is a lightweight, user-friendly tool designed to streamline project management. Create projects, assign tasks, and track progress with ease.
+A modern project management application built with Next.js and Node.js. Gira helps teams organize projects, manage tasks, and collaborate efficiently.
 
-## Features
-- Create and manage multiple projects
-- Assign tasks to team members
-- Track task status and project progress
-- Simple and intuitive interface
+## ✨ Features
 
-## Installation
-1. Clone the repository:
+- 👥 **User Management** - Registration, authentication, and user profiles
+- 🏗️ **Project Management** - Create, edit, and manage projects
+- ✅ **Task Tracking** - Add tasks, assign to users, and track progress
+- 📎 **File Attachments** - Upload and manage task attachments
+- 🎨 **Modern UI** - Clean and responsive interface with Tailwind CSS
+- 🔐 **Secure Authentication** - JWT-based authentication system
+- 📧 **Email Notifications** - Automated email notifications
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **Next.js 15** - React framework with server-side rendering
+- **TypeScript** - Type-safe JavaScript
+- **Tailwind CSS** - Utility-first CSS framework
+- **Formik & Yup** - Form handling and validation
+- **Zustand** - State management
+- **Headless UI** - Accessible UI components
+
+### Backend
+- **Node.js** - JavaScript runtime
+- **Express.js** - Web application framework
+- **MongoDB** - NoSQL database with Mongoose ODM
+- **JWT** - JSON Web Token authentication
+- **Multer** - File upload handling
+- **Nodemailer** - Email service
+- **Bcrypt** - Password hashing
+
+## 📁 Project Structure
+
+```
+gira/
+├── client/                 # Next.js frontend application
+│   ├── src/
+│   │   ├── app/           # App router pages
+│   │   ├── components/    # Reusable components
+│   │   ├── types/         # TypeScript type definitions
+│   │   ├── validators/    # Form validation schemas
+│   │   └── styles/        # Global styles
+│   └── package.json
+├── server/                # Node.js backend application
+│   ├── src/
+│   │   ├── controllers/   # Request handlers
+│   │   ├── models/        # Database models
+│   │   ├── routes/        # API routes
+│   │   ├── middlewares/   # Custom middleware
+│   │   ├── validators/    # Input validation
+│   │   ├── utils/         # Helper functions
+│   │   └── configs/       # Configuration files
+│   └── package.json
+└── README.md
+```
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js (v16 or higher)
+- MongoDB (local or cloud instance)
+- npm or yarn package manager
+
+### Installation
+
+1. **Clone the repository**
    ```bash
    git clone https://github.com/aimalexe/gira.git
-   ```
-2. Navigate to the project directory:
-   ```bash
    cd gira
    ```
 
-3. Install dependencies (update with specific dependencies once implemented, e.g., for Node.js):
+2. **Install dependencies**
    ```bash
+   # Install server dependencies
+   cd server
+   npm install
+
+   # Install client dependencies
+   cd ../client
    npm install
    ```
-4. Run the development server:
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   # or
-   pnpm dev
-   # or
-   bun dev
+
+3. **Environment Setup**
+   
+   Create `.env` file in the `server` directory:
+   ```env
+   PORT=5000
+   MONGODB_URI=mongodb://localhost:27017/gira
+   JWT_SECRET=your_jwt_secret_key
+   JWT_EXPIRES_IN=7d
+   
+   # Email configuration (optional)
+   EMAIL_SERVICE=gmail
+   EMAIL_USER=your_email@gmail.com
+   EMAIL_PASS=your_app_password
    ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. **Start the development servers**
+   
+   **Backend server:**
+   ```bash
+   cd server
+   npm run dev
+   ```
+   
+   **Frontend application:**
+   ```bash
+   cd client
+   npm run dev
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+5. **Access the application**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:5000
 
-## Usage
-1. Launch Gira in your preferred environment.
-2. Create a new project using the "New Project" button.
-3. Add tasks and assign them to team members.
-4. Monitor task completion and project status via the dashboard.
+## 📝 Usage
 
-## Contributing
-Contributions are welcome! Please follow these steps:
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature/your-feature`).
-3. Commit your changes (`git commit -m 'Add your feature'`).
-4. Push to the branch (`git push origin feature/your-feature`).
-5. Open a pull request.
+1. **Register** a new account or **login** with existing credentials
+2. **Create projects** and invite team members
+3. **Add tasks** to projects and assign them to users
+4. **Upload files** and attach them to tasks
+5. **Track progress** and manage project workflows
 
-## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👥 Authors
+
+- **Aimal Khan** - Main Developer
+- **Abdullah TRS** - Project Maintainer
+
+Built with ❤️ using Next.js and Node.js

@@ -17,6 +17,7 @@ import TaskForm from "@/components/TaskForm";
 import Pagination from "@/components/Pagination";
 import { FormikHelpers } from "formik";
 import { PlusCircleIcon } from "@heroicons/react/20/solid";
+import { ConfirmModal } from "@/components/ConfirmModal";
 
 export default function TaskPage() {
     const { user } = useAuthStore();
@@ -43,6 +44,13 @@ export default function TaskPage() {
     const [error, setError] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentTask, setCurrentTask] = useState<Task | null>(null);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
+    const [confirmTitle, setConfirmTitle] = useState("");
+    const [confirmMessage, setConfirmMessage] = useState("");
+    const [confirmVariant, setConfirmVariant] = useState<
+        "primary" | "secondary" | "danger" | "success" | "ghost"
+    >("primary");
 
     useEffect(() => {
         if (user && projectId) {
@@ -136,7 +144,10 @@ export default function TaskPage() {
     };
 
     const handleDeleteTask = async (taskId: string) => {
-        if (confirm("Are you sure you want to delete this task?")) {
+        setConfirmTitle("Delete Task");
+        setConfirmMessage("Are you sure you want to delete this task?");
+        setConfirmVariant("danger");
+        setConfirmAction(() => async () => {
             try {
                 await api.delete(`/task/${projectId}/${taskId}`);
                 fetchTasks();
@@ -145,7 +156,8 @@ export default function TaskPage() {
                     err.response?.data?.message || "Failed to delete task"
                 );
             }
-        }
+        });
+        setConfirmOpen(true);
     };
 
     if (!user || !projectId) {
@@ -286,6 +298,14 @@ export default function TaskPage() {
                     users={members}
                 />
             </Modal>
+            <ConfirmModal
+                isOpen={confirmOpen}
+                onClose={() => setConfirmOpen(false)}
+                onConfirm={confirmAction}
+                title={confirmTitle}
+                message={confirmMessage}
+                confirmVariant={confirmVariant}
+            />
         </div>
     );
 }

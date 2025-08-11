@@ -1,6 +1,7 @@
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import { useAuthStore } from "@/lib/auth";
+import { ConfirmModal } from "./ConfirmModal";
 
 interface SidebarProps {
     isOpen: boolean;
@@ -9,17 +10,28 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     const { user, logout } = useAuthStore();
+    const [confirmOpen, setConfirmOpen] = useState(false);
 
     const toggleSidebar = () => setIsOpen(!isOpen);
     const closeSidebar = () => setIsOpen(false);
+
+    const handleLogout = () => {
+        setConfirmOpen(true);
+    };
+
+    const performLogout = async () => {
+        await logout();
+        closeSidebar();
+    };
 
     return (
         <>
             {/* Burger Menu and Logo (Always Visible) */}
             <div
                 className={`fixed left-3 z-50 flex items-center space-x-4 ${
-                    isOpen ? "top-6" :
-                    "bg-white/10 backdrop-blur-md rounded-lg p-1 shadow-lg top-2"
+                    isOpen
+                        ? "top-6"
+                        : "bg-white/10 backdrop-blur-md rounded-lg p-1 shadow-lg top-2"
                 } transition-all duration-300`}
             >
                 {!isOpen && (
@@ -137,10 +149,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     <div className="mt-auto">
                         {user ? (
                             <button
-                                onClick={async () => {
-                                    await logout();
-                                    closeSidebar();
-                                }}
+                                onClick={handleLogout}
                                 className="w-full text-center px-3 py-2 rounded-md text-sm font-medium text-red-500 hover:text-white hover:bg-red-500/90 border border-red-500/50 transition-all duration-300"
                             >
                                 Logout
@@ -165,6 +174,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     onClick={closeSidebar}
                 ></div>
             )}
+            <ConfirmModal
+                isOpen={confirmOpen}
+                onClose={() => setConfirmOpen(false)}
+                onConfirm={performLogout}
+                title="Confirm Logout"
+                message="Are you sure you want to log out?"
+                confirmVariant="danger"
+            />
         </>
     );
 };

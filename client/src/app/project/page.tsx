@@ -15,6 +15,7 @@ import { Modal } from "@/components/Modal";
 import ProjectForm from "@/components/ProjectForm";
 import { FormikHelpers } from "formik";
 import { FolderPlusIcon } from "@heroicons/react/20/solid";
+import { ConfirmModal } from "@/components/ConfirmModal";
 
 export default function ProjectsPage() {
     const { user } = useAuthStore();
@@ -24,6 +25,15 @@ export default function ProjectsPage() {
     const [error, setError] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentProject, setCurrentProject] = useState<Project | null>(null);
+
+    // Confirm states
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
+    const [confirmTitle, setConfirmTitle] = useState("");
+    const [confirmMessage, setConfirmMessage] = useState("");
+    const [confirmVariant, setConfirmVariant] = useState<
+        "primary" | "secondary" | "danger" | "success" | "ghost"
+    >("primary");
 
     useEffect(() => {
         if (user) {
@@ -100,7 +110,10 @@ export default function ProjectsPage() {
 
     const handleDeleteProject = async (projectId: string) => {
         if (user?.role !== "admin") return;
-        if (confirm("Are you sure you want to delete this project?")) {
+        setConfirmTitle("Delete Project");
+        setConfirmMessage("Are you sure you want to delete this project?");
+        setConfirmVariant("danger");
+        setConfirmAction(() => async () => {
             try {
                 await api.delete(`/project/${projectId}`);
                 fetchProjects();
@@ -109,27 +122,38 @@ export default function ProjectsPage() {
                     err.response?.data?.message || "Failed to delete project"
                 );
             }
-        }
+        });
+        setConfirmOpen(true);
     };
 
     const handleAddMember = async (projectId: string, memberId: string) => {
         if (user?.role !== "admin") return;
-        if (!confirm("Are you sure you want to add this user?")) return;
-        if (memberId) {
-            try {
-                await api.post(`/project/${projectId}/members`, {
-                    userIds: [memberId],
-                });
-                fetchProjects();
-            } catch (err: any) {
-                setError(err.response?.data?.message || "Failed to add member");
+        setConfirmTitle("Add Team Member");
+        setConfirmMessage("Are you sure you want to add this user?");
+        setConfirmVariant("success");
+        setConfirmAction(() => async () => {
+            if (memberId) {
+                try {
+                    await api.post(`/project/${projectId}/members`, {
+                        userIds: [memberId],
+                    });
+                    fetchProjects();
+                } catch (err: any) {
+                    setError(
+                        err.response?.data?.message || "Failed to add member"
+                    );
+                }
             }
-        }
+        });
+        setConfirmOpen(true);
     };
 
     const handleRemoveMember = async (projectId: string, memberId: string) => {
         if (user?.role !== "admin") return;
-        if (confirm("Are you sure you want to remove this user?")) {
+        setConfirmTitle("Remove Team Member");
+        setConfirmMessage("Are you sure you want to remove this user?");
+        setConfirmVariant("danger");
+        setConfirmAction(() => async () => {
             if (memberId) {
                 try {
                     await api.delete(`/project/${projectId}/members`, {
@@ -142,7 +166,8 @@ export default function ProjectsPage() {
                     );
                 }
             }
-        }
+        });
+        setConfirmOpen(true);
     };
 
     if (!user) {
@@ -239,6 +264,14 @@ export default function ProjectsPage() {
                     users={users}
                 />
             </Modal>
+            <ConfirmModal
+                isOpen={confirmOpen}
+                onClose={() => setConfirmOpen(false)}
+                onConfirm={confirmAction}
+                title={confirmTitle}
+                message={confirmMessage}
+                confirmVariant={confirmVariant}
+            />
         </div>
     );
 }

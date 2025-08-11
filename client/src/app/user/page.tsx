@@ -20,6 +20,7 @@ import {
     TrashIcon,
     UserPlusIcon,
 } from "@heroicons/react/20/solid";
+import { ConfirmModal } from "@/components/ConfirmModal";
 
 export default function UsersPage() {
     const { user: currentUser } = useAuthStore();
@@ -34,6 +35,14 @@ export default function UsersPage() {
     const [error, setError] = useState("");
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
+
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
+    const [confirmTitle, setConfirmTitle] = useState("");
+    const [confirmMessage, setConfirmMessage] = useState("");
+    const [confirmVariant, setConfirmVariant] = useState<
+        "primary" | "secondary" | "danger" | "success" | "ghost"
+    >("primary");
 
     useEffect(() => {
         if (currentUser?.role === "admin") {
@@ -100,7 +109,7 @@ export default function UsersPage() {
         }
     };
 
-    const handleDeleteUser = async (userId: string) => {
+    /* const handleDeleteUser = async (userId: string) => {
         if (confirm("Are you sure you want to delete this user?")) {
             try {
                 await api.delete(`/user/${userId}`);
@@ -111,6 +120,22 @@ export default function UsersPage() {
                 );
             }
         }
+    }; */
+    const handleDeleteUser = async (userId: string) => {
+        setConfirmTitle("Delete User");
+        setConfirmMessage("Are you sure you want to delete this user?");
+        setConfirmVariant("danger");
+        setConfirmAction(() => async () => {
+            try {
+                await api.delete(`/user/${userId}`);
+                fetchUsers();
+            } catch (err: any) {
+                setError(
+                    err.response?.data?.message || "Failed to delete user"
+                );
+            }
+        });
+        setConfirmOpen(true);
     };
 
     if (!currentUser || currentUser.role !== "admin") {
@@ -245,6 +270,14 @@ export default function UsersPage() {
                     />
                 </Modal>
             )}
+            <ConfirmModal
+                isOpen={confirmOpen}
+                onClose={() => setConfirmOpen(false)}
+                onConfirm={confirmAction}
+                title={confirmTitle}
+                message={confirmMessage}
+                confirmVariant={confirmVariant}
+            />
         </div>
     );
 }
