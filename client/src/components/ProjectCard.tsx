@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Menu, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import {
-    ChevronDownIcon,
     UserPlusIcon,
     UserMinusIcon,
     ArrowTopRightOnSquareIcon,
@@ -48,9 +47,9 @@ export default function ProjectCard({
                         className="flex items-center justify-center gap-2 group"
                     >
                         <h3 className="text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
-                            {project.name}
+                            {project.name}&nbsp;
+                            <ArrowTopRightOnSquareIcon className="inline-block h-5 w-5 text-gray-800 group-hover:text-blue-600 transition-colors" />
                         </h3>
-                        <ArrowTopRightOnSquareIcon className="h-5 w-5 text-gray-800 group-hover:text-blue-600 transition-colors" />
                     </Link>
 
                     {currentUser.role === "admin" && (
@@ -127,9 +126,79 @@ export default function ProjectCard({
 
                 {project.members && project.members.length > 0 && (
                     <div className="mt-4">
-                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                            Team Members
-                        </h4>
+                        <div className="flex justify-between items-center border-b border-gray-200 mb-2">
+                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                Team Members
+                            </h4>
+                            {/* <button>+</button> */}
+                            {currentUser.role === "admin" && (
+                                <Menu as="div" className="relative">
+                                    <Menu.Button
+                                        title="Add Team Member"
+                                        className="rounded-md bg-gray-50 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-blue-100"
+                                    >
+                                        <UserPlusIcon className="h-4 w-4 text-gray-500" />
+                                    </Menu.Button>
+                                    <Transition
+                                        as={Fragment}
+                                        enter="transition ease-out duration-100"
+                                        enterFrom="transform opacity-0 scale-95"
+                                        enterTo="transform opacity-100 scale-100"
+                                        leave="transition ease-in duration-75"
+                                        leaveFrom="transform opacity-100 scale-100"
+                                        leaveTo="transform opacity-0 scale-95"
+                                    >
+                                        <Menu.Items className="absolute right-0 bottom-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none max-h-60 overflow-auto">
+                                            <div className="py-1">
+                                                {users
+                                                    .filter(
+                                                        (user) =>
+                                                            !project.members?.some(
+                                                                (m) =>
+                                                                    m.Id ===
+                                                                    user.Id
+                                                            )
+                                                    )
+                                                    .map((user) => (
+                                                        <Menu.Item
+                                                            key={user.Id}
+                                                        >
+                                                            {({ active }) => (
+                                                                <button
+                                                                    onClick={() =>
+                                                                        onAddMember(
+                                                                            user.Id
+                                                                        )
+                                                                    }
+                                                                    className={`${
+                                                                        active
+                                                                            ? "bg-gray-100 text-gray-900"
+                                                                            : "text-gray-700"
+                                                                    } block w-full px-4 py-2 text-left text-sm`}
+                                                                >
+                                                                    {user.name}
+                                                                </button>
+                                                            )}
+                                                        </Menu.Item>
+                                                    ))}
+                                                {users.filter(
+                                                    (user) =>
+                                                        !project.members?.some(
+                                                            (m) =>
+                                                                m.Id === user.Id
+                                                        )
+                                                ).length === 0 && (
+                                                    <div className="px-4 py-2 text-sm text-gray-500">
+                                                        No available users to
+                                                        add
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </Menu.Items>
+                                    </Transition>
+                                </Menu>
+                            )}
+                        </div>
                         <div className="flex flex-wrap gap-2">
                             {project.members?.map((member) => (
                                 <div
@@ -154,69 +223,6 @@ export default function ProjectCard({
                                 </div>
                             ))}
                         </div>
-                    </div>
-                )}
-
-                {currentUser.role === "admin" && (
-                    <div className="self-baseline mt-4 pt-4 border-t border-gray-100">
-                        <Menu as="div" className="relative">
-                            <Menu.Button className="inline-flex w-full justify-center rounded-md bg-gray-50 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-blue-100">
-                                <UserPlusIcon className="h-4 w-4 mr-2" />
-                                Add Team Member
-                                <ChevronDownIcon className="ml-2 h-4 w-4" />
-                            </Menu.Button>
-                            <Transition
-                                as={Fragment}
-                                enter="transition ease-out duration-100"
-                                enterFrom="transform opacity-0 scale-95"
-                                enterTo="transform opacity-100 scale-100"
-                                leave="transition ease-in duration-75"
-                                leaveFrom="transform opacity-100 scale-100"
-                                leaveTo="transform opacity-0 scale-95"
-                            >
-                                <Menu.Items className="absolute right-0 bottom-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none max-h-60 overflow-auto">
-                                    <div className="py-1">
-                                        {users
-                                            .filter(
-                                                (user) =>
-                                                    !project.members?.some(
-                                                        (m) => m.Id === user.Id
-                                                    )
-                                            )
-                                            .map((user) => (
-                                                <Menu.Item key={user.Id}>
-                                                    {({ active }) => (
-                                                        <button
-                                                            onClick={() =>
-                                                                onAddMember(
-                                                                    user.Id
-                                                                )
-                                                            }
-                                                            className={`${
-                                                                active
-                                                                    ? "bg-gray-100 text-gray-900"
-                                                                    : "text-gray-700"
-                                                            } block w-full px-4 py-2 text-left text-sm`}
-                                                        >
-                                                            {user.name}
-                                                        </button>
-                                                    )}
-                                                </Menu.Item>
-                                            ))}
-                                        {users.filter(
-                                            (user) =>
-                                                !project.members?.some(
-                                                    (m) => m.Id === user.Id
-                                                )
-                                        ).length === 0 && (
-                                            <div className="px-4 py-2 text-sm text-gray-500">
-                                                No available users to add
-                                            </div>
-                                        )}
-                                    </div>
-                                </Menu.Items>
-                            </Transition>
-                        </Menu>
                     </div>
                 )}
             </div>

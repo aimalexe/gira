@@ -61,7 +61,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                 <div className="flex-shrink-0">
                     <Link
                         href="/"
-                        className="text-xl font-bold text-gray-800 tracking-wider hover:text-gray-600 transition-colors duration-300"
+                        className="text-xl font-michroma font-bold text-gray-800 tracking-wider hover:text-gray-600 transition-colors duration-300"
                     >
                         Gira
                     </Link>

@@ -2,11 +2,9 @@
 
 import { Task } from "@/types/Task.type";
 import { User } from "@/types/User.type";
-import { Button } from "@/components/Button";
 import { Menu, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import {
-    ChevronDownIcon,
     PencilIcon,
     TrashIcon,
 } from "@heroicons/react/20/solid";

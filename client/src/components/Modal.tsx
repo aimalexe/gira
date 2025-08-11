@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useOutsideClick } from "@/hooks/useOutsideClick";
+import { useEffect, useRef } from "react";
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -9,6 +10,9 @@ interface ModalProps {
 }
 
 export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
+    const modalRef = useRef<HTMLDivElement | null>(null);
+    useOutsideClick(modalRef, onClose);
+
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = "hidden";
@@ -21,6 +25,21 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
         };
     }, [isOpen]);
 
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                onClose();
+            }
+        };
+        document.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [isOpen, onClose]);
+
     if (!isOpen) return null;
 
     return (
@@ -28,7 +47,7 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
             <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                 {/* Background overlay */}
                 <div
-                    className="fixed transition-opacity"
+                    className="fixed inset-0 -z-1 transition-opacity bg-black/30"
                     aria-hidden="true"
                     onClick={onClose}
                 >
@@ -36,7 +55,7 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
                 </div>
 
                 {/* Modal container */}
-                <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full border border-gray-200">
+                <div ref={modalRef} className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full border border-gray-200">
                     <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                         <div className="flex justify-between items-start">
                             <h3 className="text-lg leading-6 font-medium text-gray-900">

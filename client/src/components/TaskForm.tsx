@@ -36,11 +36,46 @@ export default function TaskForm({
     users = [],
 }: TaskFormProps) {
     const [file, setFile] = useState<File | null>();
+    const [fileError, setFileError] = useState<string | null>(null);
     const [progress, setProgress] = useState(0);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const allowedFileTypes = [
+            "application/pdf",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.ms-excel",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+        ];
+        const maxFileSize = 5 * 1024 * 1024;
+
         const selectedFile = e.target.files?.[0] || null;
+
+        if (!selectedFile) {
+            setFile(null);
+            setFileError(null);
+            return;
+        }
+
+        if (!allowedFileTypes.includes(selectedFile.type)) {
+            setFile(null);
+            setFileError(
+                "Only PDF, DOC, DOCX, XLS, XLSX, JPEG, PNG, and GIF are allowed"
+            );
+            return;
+        }
+
+        if (selectedFile.size > maxFileSize) {
+            setFile(null);
+            setFileError("File must be less than 5MB");
+            return;
+        }
+
         setFile(selectedFile);
+        setFileError(null);
         setProgress(0);
     };
 
@@ -49,6 +84,7 @@ export default function TaskForm({
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={(values, actions) => {
+                if (fileError) return;
                 onSubmit({ ...values, file }, actions);
             }}
         >
@@ -165,6 +201,7 @@ export default function TaskForm({
                                     id="dueDate"
                                     name="dueDate"
                                     type="date"
+                                    min={new Date().toISOString().split("T")[0]}
                                     className="w-full px-3 py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                                 />
                                 <ErrorMessage
@@ -194,6 +231,11 @@ export default function TaskForm({
                                         {file?.name ??
                                             initialValues.fileAttachment
                                                 ?.filename}
+                                    </p>
+                                )}
+                                {fileError && (
+                                    <p className="text-red-500 text-xs mt-1">
+                                        {fileError}
                                     </p>
                                 )}
                                 {progress > 0 && (
