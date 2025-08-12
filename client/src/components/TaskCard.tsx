@@ -25,6 +25,7 @@ export default function TaskCard({
     onDelete,
     members,
 }: TaskCardProps) {
+    console.log("🚀 ~ TaskCard ~ task:", task.dueDate)
     const assignedUser = members.find((m) => m.Id === task.assignedTo?.Id);
     const statusColor =
         statusColors[task.status] || "bg-gray-200 text-gray-800";
@@ -136,7 +137,7 @@ export default function TaskCard({
                                             </button>
                                         )}
                                     </Menu.Item>
-                                    {user?.role === "admin" &&(
+                                    {user?.role.name === "admin" &&(
                                         <Menu.Item>
                                             {({ active }) => (
                                                 <button

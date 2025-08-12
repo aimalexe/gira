@@ -2,12 +2,16 @@ const userRoutes = require("./user.route")
 const authRoutes = require("./auth.route");
 const projectRoutes = require("./project.route");
 const taskRoutes = require("./task.route")
+const roleRoutes = require("./role.route");
+const permissionRoutes = require("./permission.route");
 
 const router = (app) => {
     app.use("/api/auth", authRoutes)
     app.use("/api/user", userRoutes);
     app.use("/api/project", projectRoutes)
     app.use("/api/task", taskRoutes)
+    app.use("/api/role", roleRoutes)
+    app.use("/api/permission", permissionRoutes)
 
     // app.use("*", (req, res) => {
     //     res.status(404).send("Endpoint not found!");

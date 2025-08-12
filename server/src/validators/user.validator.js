@@ -1,9 +1,9 @@
 const Joi = require('joi');
-const { email, password } = require('./reusable.validator');
+const { email, password, objectId } = require('./reusable.validator');
 const ROLES = require("../constants/roles.const");
 
 const name = Joi.string().trim().min(2).max(50);
-const role = Joi.string().valid(...ROLES);
+const role = objectId;
 
 const validateCreateUser = (data) => {
     const schema = Joi.object({
@@ -21,6 +21,7 @@ const validateUpdateUser = (data) => {
         name: name.optional(),
         email: email.optional(),
         password: password.optional(),
+        role: role.optional()
     }).min(1);
 
     return schema.validate(data);

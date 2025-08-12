@@ -52,7 +52,7 @@ export default function ProjectCard({
                         </h3>
                     </Link>
 
-                    {currentUser.role === "admin" && (
+                    {currentUser.role.name === "admin" && (
                         <Menu
                             as="div"
                             className="relative inline-block text-left"
@@ -131,7 +131,7 @@ export default function ProjectCard({
                                 Team Members
                             </h4>
                             {/* <button>+</button> */}
-                            {currentUser.role === "admin" && (
+                            {currentUser.role.name === "admin" && (
                                 <Menu as="div" className="relative">
                                     <Menu.Button
                                         title="Add Team Member"
@@ -209,7 +209,7 @@ export default function ProjectCard({
                                     <span className="text-sm text-gray-700">
                                         {member.name}
                                     </span>
-                                    {currentUser.role === "admin" && (
+                                    {currentUser.role.name === "admin" && (
                                         <button
                                             onClick={() =>
                                                 onRemoveMember(member.Id)

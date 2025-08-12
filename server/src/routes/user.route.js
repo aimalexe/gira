@@ -1,6 +1,6 @@
 const express = require('express');
-const asyncHandler  = require('../middlewares/async-handler');
-const { allowRoles, authenticateUser } = require('../middlewares/auth.middleware');
+const asyncHandler = require('../middlewares/async-handler');
+const { authorize } = require('../middlewares/auth.middleware');
 const isValidId = require('../middlewares/is-valid-id');
 const validateAndSanitize = require('../middlewares/validate-and-sanitize');
 const {
@@ -13,32 +13,36 @@ const router = express.Router();
 
 router.post(
     '/',
-    [allowRoles('admin')],
+    [authorize({ permissions: ["create:user"] })],
     validateAndSanitize(validateCreateUser),
     asyncHandler(userController.createUser)
 );
 
 router.get(
     '/',
-    [allowRoles('admin')],
+    [authorize({ permissions: ["view:user"] })],
     asyncHandler(userController.getAllUsers)
 );
 
 router.get(
     '/:id',
-    [allowRoles('admin', "user"), isValidId],
+    [authorize({ permissions: ["view:user"] }), isValidId],
     asyncHandler(userController.getUserById)
 );
 
 router.put(
     '/:id',
-    [allowRoles('admin', "user"), isValidId, validateAndSanitize(validateUpdateUser)],
+    [
+        authorize({ permissions: ["update:user"] }),
+        isValidId,
+        validateAndSanitize(validateUpdateUser)
+    ],
     asyncHandler(userController.updateUser)
 );
 
 router.delete(
     '/:id',
-    [allowRoles('admin', "user"), isValidId],
+    [authorize({ permissions: ["delete:user"] }), isValidId],
     asyncHandler(userController.deleteUser)
 );
 

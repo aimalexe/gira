@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const login = async (req, res) => {
     const { email, password } = req.validatedData;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).populate("role", "name");
     if (!user) {
         return res.status(401).json({
             status: 'error',

@@ -1,9 +1,6 @@
 const User = require('../models/User.model');
 const jwt = require('jsonwebtoken');
 
-/**
- * Internal helper to extract and validate user from token
- */
 const getAuthenticatedUser = async (req) => {
     const authHeader = req.cookies.authorization;
 
@@ -19,15 +16,20 @@ const getAuthenticatedUser = async (req) => {
         throw new Error('Invalid or expired token. Please login');
     }
 
-    const user = await User.findById(decoded.id);
+    const user = await User.findById(decoded.id)
+        .populate({
+            path: 'role',
+            populate: {
+                path: 'permissions',
+                select: 'name'
+            }
+        });
     if (!user) throw new Error('User not found');
 
     return user;
 };
 
-/**
- * Middleware to authenticate any user
- */
+// Authenticate middleware
 const authenticateUser = async (req, res, next) => {
     try {
         req.user = await getAuthenticatedUser(req);
@@ -38,24 +40,38 @@ const authenticateUser = async (req, res, next) => {
 };
 
 /**
- * Middleware to authenticate and authorize by roles
- * @param  {...string} allowedRoles
+ * Authorize by either role name(s) OR permission name(s)
+ * @param {Object} options - { roles?: string[], permissions?: string[] }
  */
-const allowRoles = (...allowedRoles) => async (req, res, next) => {
-    try {
-        const user = await getAuthenticatedUser(req);
-
-        if (allowedRoles.length && !allowedRoles.includes(user.role))
-            return res.status(403).json({
-                success: false,
-                message: `Access denied for role: ${user.role}`
-            })
-
-        req.user = user;
-        next();
-    } catch (err) {
-        next(err);
-    }
+const authorize = ({ roles = [], permissions = [] } = {}) => {
+    return async (req, res, next) => {
+        try {
+            const user = await getAuthenticatedUser(req);
+            
+            if (roles.length && !roles.includes(user.role.name)) {
+                return res.status(403).json({
+                    success: false,
+                    message: `Access denied for role: ${user.role.name}`
+                });
+            }
+            
+            if (permissions.length) {
+                const userPermissions = user.role.permissions.map(p => p.name);
+                const hasPermission = permissions.every(p => userPermissions.includes(p));
+                if (!hasPermission) {
+                    return res.status(403).json({
+                        success: false,
+                        message: `Missing required permissions`
+                    });
+                }
+            }
+            
+            req.user = user;
+            next();
+        } catch (err) {
+            next(err);
+        }
+    };
 };
 
-module.exports = { authenticateUser, allowRoles };
+module.exports = { authenticateUser, authorize };

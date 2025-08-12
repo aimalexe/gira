@@ -8,7 +8,9 @@ interface UserFormProps {
         name: string;
         email: string;
         password: string;
-        role: "admin" | "user";
+        role: {
+            name: string
+        };
     };
     validationSchema: any;
     onSubmit: (values: any, actions: any) => void;

@@ -103,8 +103,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                         <div className="mt-10 mb-8">
                             <span className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">
                                 Hello,{" "}
-                                {user.role.charAt(0).toUpperCase() +
-                                    user.role.slice(1)}
+                                {user.role.name.charAt(0).toUpperCase() +
+                                    user.role.name.slice(1)}
                             </span>
                         </div>
                     )}
@@ -113,7 +113,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     <div className="flex-1 space-y-3">
                         {user ? (
                             <>
-                                {user.role === "admin" && (
+                                {user.role.name === "admin" && (
                                     <>
                                         <NavLink
                                             href="/user"
@@ -127,9 +127,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                                         >
                                             Projects
                                         </NavLink>
+                                        <NavLink
+                                            href="/role"
+                                            onClick={closeSidebar}
+                                        >
+                                            Roles
+                                        </NavLink>
                                     </>
                                 )}
-                                {user.role !== "admin" && (
+                                {user.role.name !== "admin" && (
                                     <NavLink
                                         href="/project"
                                         onClick={closeSidebar}

@@ -45,7 +45,7 @@ export default function UsersPage() {
     >("primary");
 
     useEffect(() => {
-        if (currentUser?.role === "admin") {
+        if (currentUser?.role.name === "admin") {
             fetchUsers();
         } else if (!currentUser) {
             router.push("/login");
@@ -138,7 +138,7 @@ export default function UsersPage() {
         setConfirmOpen(true);
     };
 
-    if (!currentUser || currentUser.role !== "admin") {
+    if (!currentUser || currentUser.role.name !== "admin") {
         return null;
     }
 
@@ -171,7 +171,7 @@ export default function UsersPage() {
                                 <TableCell>
                                     <div className="flex items-center">
                                         {user.name}
-                                        {user.role === "admin" && (
+                                        {user.role.name === "admin" && (
                                             <span className="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
                                                 Admin
                                             </span>
@@ -180,7 +180,7 @@ export default function UsersPage() {
                                 </TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell className="capitalize">
-                                    {user.role}
+                                    {user.role.name}
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex space-x-2">
@@ -191,7 +191,7 @@ export default function UsersPage() {
                                             <PencilSquareIcon className="h-5 w-5 text-white" />{" "}
                                             Edit
                                         </Button>
-                                        {user.role !== "admin" && (
+                                        {user.role.name !== "admin" && (
                                             <Button
                                                 variant="danger"
                                                 onClick={() =>
@@ -237,7 +237,9 @@ export default function UsersPage() {
                         name: "",
                         email: "",
                         password: "",
-                        role: "user",
+                        role: {
+                            name: "user",
+                        },
                     }}
                     validationSchema={CreateUserSchema}
                     onSubmit={handleCreateUser}
@@ -258,7 +260,9 @@ export default function UsersPage() {
                             name: editingUser?.name ?? "",
                             email: editingUser?.email ?? "",
                             password: "",
-                            role: editingUser.role,
+                            role: {
+                                name: editingUser.role.name,
+                            },
                         }}
                         validationSchema={UpdateUserSchema}
                         onSubmit={(values, actions) => {

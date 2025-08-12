@@ -36,6 +36,7 @@ const getAllUsers = async (req, res, next) => {
         if (role) query.role = Array.isArray(role) ? { $in: role } : role;
 
         const users = await User.find(query)
+            .populate("role", "name")
             .select('-password')
             .skip((pageNo - 1) * itemsPerPage)
             .limit(parseInt(itemsPerPage));
@@ -58,7 +59,7 @@ const getAllUsers = async (req, res, next) => {
 
 const getUserById = async (req, res, next) => {
     try {
-        const user = await User.findById(req.params.id).select('-password');
+        const user = await User.findById(req.params.id).select('-password').populate("role", "name");
         if (!user) {
             return res.status(404).json({
                 status: 'error',
@@ -94,6 +95,7 @@ const updateUser = async (req, res, next) => {
             });
         }
 
+        console.log("🚀 ~ updateUser ~ req.validatedData:", req.validatedData)
         const { email, password, ...otherData } = req.validatedData;
         if (email) {
             const isEmailPresent = await User.findOne({ email, _id: { $ne: id } });
@@ -103,10 +105,11 @@ const updateUser = async (req, res, next) => {
             });
         }
 
-        Object.assign(user, { ...otherData, email, updated_by: req?.user._id ?? null });
+        Object.assign(user, { ...otherData, updated_by: req?.user._id ?? null });
         if (password) {
             user.password = password;
         }
+        if (email) user.email = email;
 
         const updatedUser = await user.save();
         const { password: _, ...userWithoutPassword } = updatedUser.toObject();

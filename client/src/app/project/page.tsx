@@ -37,10 +37,10 @@ export default function ProjectsPage() {
 
     useEffect(() => {
         if (user) {
-            if (user.role === "admin") {
+            if (user.role.name === "admin") {
                 fetchProjects();
                 fetchUsers();
-            } else if (user.role === "user") {
+            } else if (user.role.name === "user") {
                 fetchProjects();
             }
         } else {
@@ -76,7 +76,7 @@ export default function ProjectsPage() {
         values: { name: string; description: string; members: string[] },
         { setSubmitting, resetForm }: FormikHelpers<any>
     ) => {
-        if (user?.role !== "admin") return;
+        if (user?.role.name !== "admin") return;
         try {
             await api.post("/project", values);
             resetForm();
@@ -93,7 +93,7 @@ export default function ProjectsPage() {
         values: { name?: string; description?: string; members?: string[] },
         { setSubmitting }: FormikHelpers<any>
     ) => {
-        if (!currentProject || user?.role !== "admin") return;
+        if (!currentProject || user?.role.name !== "admin") return;
         try {
             if (values.members && values.members.length > 0)
                 delete values.members;
@@ -109,7 +109,7 @@ export default function ProjectsPage() {
     };
 
     const handleDeleteProject = async (projectId: string) => {
-        if (user?.role !== "admin") return;
+        if (user?.role.name !== "admin") return;
         setConfirmTitle("Delete Project");
         setConfirmMessage("Are you sure you want to delete this project?");
         setConfirmVariant("danger");
@@ -127,7 +127,7 @@ export default function ProjectsPage() {
     };
 
     const handleAddMember = async (projectId: string, memberId: string) => {
-        if (user?.role !== "admin") return;
+        if (user?.role.name !== "admin") return;
         setConfirmTitle("Add Team Member");
         setConfirmMessage("Are you sure you want to add this user?");
         setConfirmVariant("success");
@@ -149,7 +149,7 @@ export default function ProjectsPage() {
     };
 
     const handleRemoveMember = async (projectId: string, memberId: string) => {
-        if (user?.role !== "admin") return;
+        if (user?.role.name !== "admin") return;
         setConfirmTitle("Remove Team Member");
         setConfirmMessage("Are you sure you want to remove this user?");
         setConfirmVariant("danger");
@@ -181,7 +181,7 @@ export default function ProjectsPage() {
                     <h1 className="text-2xl font-bold text-gray-800">
                         Project Management
                     </h1>
-                    {user.role === "admin" && (
+                    {user.role.name === "admin" && (
                         <Button
                             variant="primary"
                             onClick={() => {
