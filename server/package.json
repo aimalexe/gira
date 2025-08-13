@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/app.js"
+    "dev": "nodemon src/app.js",
+    "db:backup": "node ./src/db/seeders/backup-db.js",
+    "db:restore": "node ./src/db/seeders/restore-db.js"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +24,7 @@
     "nodemailer": "^7.0.5"
   },
   "devDependencies": {
+    "bson": "^6.10.4",
     "nodemon": "^3.1.10"
   }
 }

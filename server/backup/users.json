@@ -1,0 +1,266 @@
+[
+  {
+    "_id": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "name": "Admin 1",
+    "email": "a1@g.com",
+    "password": "$2b$10$vK8nt.SrpgpEIx.ZeRG0quKrAWPGAr3BenD9jC2e38Ww6cKEWD7gq",
+    "role": {
+      "$oid": "689b198d653e6183aa80352d"
+    },
+    "created_by": {
+      "$oid": "6891abdd17074bfa5a7274ea"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-05T07:46:48.180Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T11:17:53.215Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689493e3d1a6fdc2074e4c9f"
+    },
+    "name": "Admin 2",
+    "email": "a2@g.com",
+    "password": "$2b$10$QlFMwTBG1M1BmBp1dFJyFuiGkh1uWHlScsdeJhzQBqb2QjULch5wC",
+    "role": {
+      "$oid": "689b198d653e6183aa80352d"
+    },
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-07T11:54:11.253Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T11:17:53.215Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689493ffd1a6fdc2074e4ca6"
+    },
+    "name": "User 1",
+    "email": "u1@g.com",
+    "password": "$2b$10$KKvWd2rmQfI13Evgh0Pgn.jigE8ksI0zDIffixY0tNDgcRmSgVcK.",
+    "role": {
+      "$oid": "689b1fae5dec4578718b89ae"
+    },
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-07T11:54:39.765Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T11:17:53.215Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6894941fd1a6fdc2074e4cad"
+    },
+    "name": "User 2",
+    "email": "u2@g.com",
+    "password": "$2b$10$bO7NX74Ev5kx6vqeT/03kOEGDy2oLl2sdaIKjifJOo47/EhRwNKNK",
+    "role": {
+      "$oid": "689b1fae5dec4578718b89ae"
+    },
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-07T11:55:11.499Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T11:17:53.215Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689494c7d1a6fdc2074e4d03"
+    },
+    "name": "User 3",
+    "email": "u3@g.com",
+    "password": "$2b$10$ie5iGuSiUSCp8MoTeFJV/Okm5Uk9f3dH7MDhT4fwL4OQ1lH2Qrvyq",
+    "role": {
+      "$oid": "689b1fae5dec4578718b89ae"
+    },
+    "created_by": {
+      "$oid": "689493e3d1a6fdc2074e4c9f"
+    },
+    "updated_by": {
+      "$oid": "689493e3d1a6fdc2074e4c9f"
+    },
+    "createdAt": {
+      "$date": "2025-08-07T11:57:59.582Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T11:17:53.215Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689494e0d1a6fdc2074e4d0a"
+    },
+    "name": "User 4",
+    "email": "u4@g.com",
+    "password": "$2b$10$EJGy5x4AvTrsHEzx0tlDkO1t.8h33hdKFKlP.EskBIQbU/8F2bzL.",
+    "role": {
+      "$oid": "689b1fae5dec4578718b89ae"
+    },
+    "created_by": {
+      "$oid": "689493e3d1a6fdc2074e4c9f"
+    },
+    "updated_by": {
+      "$oid": "689493e3d1a6fdc2074e4c9f"
+    },
+    "createdAt": {
+      "$date": "2025-08-07T11:58:24.626Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T11:17:53.215Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "name": "Student Admin",
+    "email": "21pwcse1996@uetpeshawar.edu.pk",
+    "password": "$2b$10$Xtap8QJ/.uJt9sJFpexV1.z2sfZPtYawoF2zRzcT5IXS6Vlw1ENfC",
+    "role": {
+      "$oid": "689b198d653e6183aa80352d"
+    },
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-08T11:14:02.725Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T11:17:53.215Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6895dc740d95679711b6e66e"
+    },
+    "name": "Student 1",
+    "email": "s1@edu.pk",
+    "password": "$2b$10$CiTmBC9xAB7cfiymUKGLDeVpNHRc7OqJ/dKZseijeQESsXBNZn0uO",
+    "role": {
+      "$oid": "689b1fae5dec4578718b89ae"
+    },
+    "created_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "updated_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "createdAt": {
+      "$date": "2025-08-08T11:16:04.524Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T11:17:53.215Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6895dc8d0d95679711b6e675"
+    },
+    "name": "Student 2",
+    "email": "s2@edu.pk",
+    "password": "$2b$10$TxMzkY0MtIvqFsF/ieRPxey12nskODm2bhG6j7Uu7gCf2z6ww85Ye",
+    "role": {
+      "$oid": "689b1fae5dec4578718b89ae"
+    },
+    "created_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "updated_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "createdAt": {
+      "$date": "2025-08-08T11:16:29.391Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T11:17:53.215Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689c308ab34c8eabcc7c1ff7"
+    },
+    "name": "ldsakjf",
+    "email": "aimalexe@gmail.com",
+    "password": "$2b$10$ECG3cJ1LwQsA6LO.6zjUbuL.0tpYNGYT0laRJLy6Iv4bRSvlKJkc6",
+    "role": {
+      "$oid": "689b2fd9dd68687a615eddf6"
+    },
+    "created_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "updated_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "createdAt": {
+      "$date": "2025-08-13T06:28:26.398Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-13T06:38:15.340Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689c337b9262e0820ca0fa66"
+    },
+    "name": "Student 3",
+    "email": "s3@g.com",
+    "password": "$2b$10$3K2p2nHMztVeIgrKo7mvWOyCgzbDWkAnyvk/dr81LYikbk0ZWy.kK",
+    "role": {
+      "$oid": "689c33ad9262e0820ca0fa92"
+    },
+    "created_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "updated_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "createdAt": {
+      "$date": "2025-08-13T06:40:59.938Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-13T06:42:04.979Z"
+    },
+    "__v": 0
+  }
+]

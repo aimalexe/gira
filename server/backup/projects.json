@@ -1,0 +1,199 @@
+[
+  {
+    "_id": {
+      "$oid": "68948735a5b55527e8f14dd6"
+    },
+    "name": "Admin 2 Project",
+    "description": "Created by admin 2",
+    "created_by": {
+      "$oid": "68945940a25095ab5261c673"
+    },
+    "members": [
+      {
+        "$oid": "6891b6fc90cac82cd483d43a"
+      },
+      {
+        "$oid": "68944b78a25095ab5261c53a"
+      }
+    ],
+    "createdAt": {
+      "$date": "2025-08-07T11:00:05.595Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-07T11:03:54.030Z"
+    },
+    "__v": 1
+  },
+  {
+    "_id": {
+      "$oid": "6894943dd1a6fdc2074e4cbe"
+    },
+    "name": "Proj 1",
+    "description": "Some description",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "members": [
+      {
+        "$oid": "6894941fd1a6fdc2074e4cad"
+      },
+      {
+        "$oid": "689493ffd1a6fdc2074e4ca6"
+      }
+    ],
+    "createdAt": {
+      "$date": "2025-08-07T11:55:41.332Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-08T13:14:59.669Z"
+    },
+    "__v": 8
+  },
+  {
+    "_id": {
+      "$oid": "689494fdd1a6fdc2074e4d1b"
+    },
+    "name": "Project 1",
+    "description": "This is a project about medlens",
+    "created_by": {
+      "$oid": "689493e3d1a6fdc2074e4c9f"
+    },
+    "members": [
+      {
+        "$oid": "689494c7d1a6fdc2074e4d03"
+      },
+      {
+        "$oid": "689494e0d1a6fdc2074e4d0a"
+      }
+    ],
+    "createdAt": {
+      "$date": "2025-08-07T11:58:53.097Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-07T11:58:53.097Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6895dca40d95679711b6e686"
+    },
+    "name": "Final Year Project",
+    "description": "If you need help with email template styling, switching to another email service, or additional notifications (e.g., to the assigned user), let me know!",
+    "created_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "members": [
+      {
+        "$oid": "6895dc8d0d95679711b6e675"
+      },
+      {
+        "$oid": "6895dc740d95679711b6e66e"
+      }
+    ],
+    "createdAt": {
+      "$date": "2025-08-08T11:16:52.631Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-13T07:06:56.399Z"
+    },
+    "__v": 4
+  },
+  {
+    "_id": {
+      "$oid": "6895f897152b03265d640b75"
+    },
+    "name": "Proj 2",
+    "description": "What description should i write for this",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "members": [
+      {
+        "$oid": "689493ffd1a6fdc2074e4ca6"
+      },
+      {
+        "$oid": "6894941fd1a6fdc2074e4cad"
+      }
+    ],
+    "createdAt": {
+      "$date": "2025-08-08T13:16:07.849Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-08T13:16:07.849Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "68998d08148a4dfa5cf78f8b"
+    },
+    "name": "DBMS Semester Project",
+    "description": "Semester Final Project to create a full stack site in which a user can book travel around the word",
+    "created_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "members": [
+      {
+        "$oid": "6895dc740d95679711b6e66e"
+      }
+    ],
+    "createdAt": {
+      "$date": "2025-08-11T06:26:16.128Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-11T07:35:11.449Z"
+    },
+    "__v": 4
+  },
+  {
+    "_id": {
+      "$oid": "6899ea5259d1eba9fdbacd4d"
+    },
+    "name": "Test Project",
+    "description": "This is a test project.",
+    "created_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "members": [
+      {
+        "$oid": "6895dc740d95679711b6e66e"
+      },
+      {
+        "$oid": "6895dc8d0d95679711b6e675"
+      }
+    ],
+    "createdAt": {
+      "$date": "2025-08-11T13:04:18.359Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-11T13:04:18.359Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689b248eac25513f126f6025"
+    },
+    "name": "prokdf",
+    "description": "dslkfas dflsadj faklsdjf",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "members": [
+      {
+        "$oid": "689493ffd1a6fdc2074e4ca6"
+      },
+      {
+        "$oid": "689493e3d1a6fdc2074e4c9f"
+      }
+    ],
+    "createdAt": {
+      "$date": "2025-08-12T11:25:02.501Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T11:26:10.069Z"
+    },
+    "__v": 2
+  }
+]
