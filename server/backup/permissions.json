@@ -1,0 +1,362 @@
+[
+  {
+    "_id": {
+      "$oid": "689aef95701543d7b05fcfcc"
+    },
+    "name": "create:task",
+    "description": "Can create task in projects",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-12T07:39:01.018Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T07:39:01.018Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689af01b701543d7b05fcfcf"
+    },
+    "name": "update:task",
+    "description": "Can update task in projects",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-12T07:41:15.392Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T07:41:15.392Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689af02a701543d7b05fcfd2"
+    },
+    "name": "delete:task",
+    "description": "Can delete task in projects",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-12T07:41:30.311Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T07:41:30.311Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689af365bd2e0a457a65831c"
+    },
+    "name": "view:task",
+    "description": "Can view task in projects",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-12T07:55:17.767Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T08:07:20.652Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689b170f02a8458465f11e8c"
+    },
+    "name": "view:project",
+    "description": "Can view tasproject in projects",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-12T10:27:27.922Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T10:27:27.922Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689b172102a8458465f11e90"
+    },
+    "name": "create:project",
+    "description": "Can view project in projects",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-12T10:27:45.862Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T10:27:45.862Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689b172902a8458465f11e94"
+    },
+    "name": "update:project",
+    "description": "Can view project in projects",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-12T10:27:53.831Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T10:27:53.831Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689b173102a8458465f11e9a"
+    },
+    "name": "delete:project",
+    "description": "Can view project in projects",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-12T10:28:01.576Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T10:28:01.576Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689b175502a8458465f11e9e"
+    },
+    "name": "delete:user",
+    "description": "Can delete users",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-12T10:28:37.408Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T10:28:37.408Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689b176302a8458465f11ea2"
+    },
+    "name": "view:user",
+    "description": "Can view users",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-12T10:28:51.919Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T10:28:51.919Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689b177002a8458465f11ea6"
+    },
+    "name": "update:user",
+    "description": "Can update users",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-12T10:29:04.666Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T10:29:04.666Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689b177a02a8458465f11eaa"
+    },
+    "name": "create:user",
+    "description": "Can create users",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-12T10:29:14.897Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T10:29:14.897Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689b17cd02a8458465f11eb1"
+    },
+    "name": "add:member",
+    "description": "Can add member to project",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-12T10:30:37.401Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T10:30:37.401Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689b17e002a8458465f11eb5"
+    },
+    "name": "remove:member",
+    "description": "Can remove member to project",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-12T10:30:56.155Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T10:30:56.155Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689c3d7e91e838fbc3447cd2"
+    },
+    "name": "create:role",
+    "description": "Can create role by using different permissions",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-13T07:23:42.161Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-13T07:23:42.161Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689c3d9291e838fbc3447cdb"
+    },
+    "name": "update:role",
+    "description": "Can update role by using different permissions",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-13T07:24:02.686Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-13T07:24:02.686Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689c3da691e838fbc3447ce4"
+    },
+    "name": "delete:role",
+    "description": "Can delete role",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-13T07:24:22.791Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-13T07:24:22.791Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689c3db291e838fbc3447ced"
+    },
+    "name": "view:role",
+    "description": "Can view role",
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-13T07:24:34.083Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-13T07:24:34.083Z"
+    },
+    "__v": 0
+  }
+]

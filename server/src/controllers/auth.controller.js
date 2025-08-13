@@ -4,7 +4,15 @@ const jwt = require('jsonwebtoken');
 const login = async (req, res) => {
     const { email, password } = req.validatedData;
 
-    const user = await User.findOne({ email }).populate("role", "name");
+    const user = await User.findOne({ email }).populate({
+        path: "role",
+        select: "name permissions",
+        populate: {
+            path: "permissions",
+            select: "name"
+        }
+    });
+    
     if (!user) {
         return res.status(401).json({
             status: 'error',
@@ -35,7 +43,7 @@ const login = async (req, res) => {
 
     res.status(200).json({
         status: 'success',
-        data: { id: user._id, role: user.role, token: bearerToken }
+        data: { id: user._id, name: user.name, role: user.role, token: bearerToken }
     });
 };
 

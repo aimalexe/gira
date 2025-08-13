@@ -21,6 +21,8 @@ import {
     UserPlusIcon,
 } from "@heroicons/react/20/solid";
 import { ConfirmModal } from "@/components/ConfirmModal";
+import { checkPermission } from "@/utils/permissions.util";
+import PermissionGuard from "@/components/PermissionGuard";
 
 export default function UsersPage() {
     const { user: currentUser } = useAuthStore();
@@ -45,20 +47,20 @@ export default function UsersPage() {
     >("primary");
 
     useEffect(() => {
-        if (currentUser?.role.name === "admin") {
+        if (currentUser) {
             fetchUsers();
-        } else if (!currentUser) {
-            router.push("/login");
         } else {
-            router.push("/");
+            router.push("/login");
         }
     }, [currentUser, pagination.pageNo, router]);
 
     const fetchUsers = async () => {
+        if (!checkPermission(currentUser, "view:user")) return;
         try {
             const response = await api.get("/user", {
                 params: { page: pagination.pageNo, limit: pagination.limit },
             });
+            console.log("🚀 ~ fetchUsers ~ response:", response);
             setUsers(response.data.users);
             setPagination(response.data.pagination);
             setError("");
@@ -76,6 +78,7 @@ export default function UsersPage() {
         },
         { setSubmitting, resetForm }: FormikHelpers<any>
     ) => {
+        if (!checkPermission(currentUser, "create:user")) return;
         try {
             await api.post("/user", values);
             resetForm();
@@ -94,9 +97,12 @@ export default function UsersPage() {
             name?: string;
             email?: string;
             password?: string;
+            role?: string;
         },
         { setSubmitting }: FormikHelpers<any>
     ) => {
+        if (!checkPermission(currentUser, "update:user")) return;
+
         try {
             if (values.password === "") delete values.password;
             await api.put(`/user/${userId}`, values);
@@ -109,19 +115,8 @@ export default function UsersPage() {
         }
     };
 
-    /* const handleDeleteUser = async (userId: string) => {
-        if (confirm("Are you sure you want to delete this user?")) {
-            try {
-                await api.delete(`/user/${userId}`);
-                fetchUsers();
-            } catch (err: any) {
-                setError(
-                    err.response?.data?.message || "Failed to delete user"
-                );
-            }
-        }
-    }; */
     const handleDeleteUser = async (userId: string) => {
+        if (!checkPermission(currentUser, "delete:user")) return;
         setConfirmTitle("Delete User");
         setConfirmMessage("Are you sure you want to delete this user?");
         setConfirmVariant("danger");
@@ -138,7 +133,7 @@ export default function UsersPage() {
         setConfirmOpen(true);
     };
 
-    if (!currentUser || currentUser.role.name !== "admin") {
+    if (!currentUser || !checkPermission(currentUser, "view:user")) {
         return null;
     }
 
@@ -149,13 +144,18 @@ export default function UsersPage() {
                     <h1 className="text-2xl font-bold text-gray-800">
                         User Management
                     </h1>
-                    <Button
-                        variant="primary"
-                        onClick={() => setIsCreateModalOpen(true)}
+                    <PermissionGuard
+                        user={currentUser}
+                        permission="create:user"
                     >
-                        <UserPlusIcon className="h-5 w-5 text-white" /> Create
-                        New User
-                    </Button>
+                        <Button
+                            variant="primary"
+                            onClick={() => setIsCreateModalOpen(true)}
+                        >
+                            <UserPlusIcon className="h-5 w-5 text-white" />{" "}
+                            Create New User
+                        </Button>
+                    </PermissionGuard>
                 </div>
 
                 {error && (
@@ -163,67 +163,80 @@ export default function UsersPage() {
                         {error}
                     </div>
                 )}
-
-                <Table headers={["Name", "Email", "Role", "Actions"]}>
-                    {users.length > 0 ? (
-                        users.map((user) => (
-                            <TableRow key={user.Id}>
-                                <TableCell>
-                                    <div className="flex items-center">
-                                        {user.name}
-                                        {user.role.name === "admin" && (
-                                            <span className="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
-                                                Admin
-                                            </span>
-                                        )}
-                                    </div>
-                                </TableCell>
-                                <TableCell>{user.email}</TableCell>
-                                <TableCell className="capitalize">
-                                    {user.role.name}
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex space-x-2">
-                                        <Button
-                                            variant="primary"
-                                            onClick={() => setEditingUser(user)}
-                                        >
-                                            <PencilSquareIcon className="h-5 w-5 text-white" />{" "}
-                                            Edit
-                                        </Button>
-                                        {user.role.name !== "admin" && (
-                                            <Button
-                                                variant="danger"
-                                                onClick={() =>
-                                                    handleDeleteUser(user.Id)
-                                                }
+                <PermissionGuard user={currentUser} permission="view:user">
+                    <Table headers={["Name", "Email", "Role", "Actions"]}>
+                        {users.length > 0 ? (
+                            users.map((user) => (
+                                <TableRow key={user.Id}>
+                                    <TableCell>
+                                        <div className="flex items-center">
+                                            {user.name}
+                                            {user.role.name === "admin" && (
+                                                <span className="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                                                    Admin
+                                                </span>
+                                            )}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>{user.email}</TableCell>
+                                    <TableCell className="capitalize">
+                                        {user.role.name}
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex space-x-2">
+                                            <PermissionGuard
+                                                user={currentUser}
+                                                permission="update:user"
                                             >
-                                                <TrashIcon className="h-5 w-5 text-white" />{" "}
-                                                Delete
-                                            </Button>
-                                        )}
-                                    </div>
+                                                <Button
+                                                    variant="primary"
+                                                    onClick={() =>
+                                                        setEditingUser(user)
+                                                    }
+                                                >
+                                                    <PencilSquareIcon className="h-5 w-5 text-white" />{" "}
+                                                    Edit
+                                                </Button>
+                                            </PermissionGuard>
+                                            <PermissionGuard
+                                                user={currentUser}
+                                                permission="delete:user"
+                                            >
+                                                <Button
+                                                    variant="danger"
+                                                    onClick={() =>
+                                                        handleDeleteUser(
+                                                            user.Id
+                                                        )
+                                                    }
+                                                >
+                                                    <TrashIcon className="h-5 w-5 text-white" />{" "}
+                                                    Delete
+                                                </Button>
+                                            </PermissionGuard>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={4}
+                                    className="text-center py-8 text-gray-500"
+                                >
+                                    No users found
                                 </TableCell>
                             </TableRow>
-                        ))
-                    ) : (
-                        <TableRow>
-                            <TableCell
-                                colSpan={4}
-                                className="text-center py-8 text-gray-500"
-                            >
-                                No users found
-                            </TableCell>
-                        </TableRow>
-                    )}
-                </Table>
+                        )}
+                    </Table>
 
-                <div className="mt-6">
-                    <Pagination
-                        pagination={pagination}
-                        setPagination={setPagination}
-                    />
-                </div>
+                    <div className="mt-6">
+                        <Pagination
+                            pagination={pagination}
+                            setPagination={setPagination}
+                        />
+                    </div>
+                </PermissionGuard>
             </div>
 
             {/* Create User Modal */}
@@ -237,9 +250,6 @@ export default function UsersPage() {
                         name: "",
                         email: "",
                         password: "",
-                        role: {
-                            name: "user",
-                        },
                     }}
                     validationSchema={CreateUserSchema}
                     onSubmit={handleCreateUser}
@@ -260,13 +270,10 @@ export default function UsersPage() {
                             name: editingUser?.name ?? "",
                             email: editingUser?.email ?? "",
                             password: "",
-                            role: {
-                                name: editingUser.role.name,
-                            },
+                            role: editingUser.role.Id,
                         }}
                         validationSchema={UpdateUserSchema}
                         onSubmit={(values, actions) => {
-                            delete values.role;
                             handleUpdateUser(editingUser.Id, values, actions);
                         }}
                         isSubmitting={false}

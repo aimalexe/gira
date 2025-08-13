@@ -18,6 +18,8 @@ import Pagination from "@/components/Pagination";
 import { FormikHelpers } from "formik";
 import { PlusCircleIcon } from "@heroicons/react/20/solid";
 import { ConfirmModal } from "@/components/ConfirmModal";
+import { checkPermission } from "@/utils/permissions.util";
+import PermissionGuard from "@/components/PermissionGuard";
 
 export default function TaskPage() {
     const { user } = useAuthStore();
@@ -61,6 +63,8 @@ export default function TaskPage() {
     }, [user, projectId, pagination.pageNo, filters, router]);
 
     const fetchTasks = async () => {
+        if (!checkPermission(user, "view:task")) return;
+
         try {
             const params = {
                 page: pagination.pageNo,
@@ -88,6 +92,8 @@ export default function TaskPage() {
         values: any,
         { setSubmitting, resetForm }: FormikHelpers<any>
     ) => {
+        if (!checkPermission(user, "create:task")) return;
+
         try {
             const formData = new FormData();
             formData.append("title", values.title);
@@ -119,6 +125,8 @@ export default function TaskPage() {
         values: any,
         { setSubmitting }: FormikHelpers<any>
     ) => {
+        if (!checkPermission(user, "update:task")) return;
+
         try {
             const formData = new FormData();
             formData.append("title", values.title);
@@ -144,6 +152,8 @@ export default function TaskPage() {
     };
 
     const handleDeleteTask = async (taskId: string) => {
+        if (!checkPermission(user, "delete:task")) return;
+
         setConfirmTitle("Delete Task");
         setConfirmMessage("Are you sure you want to delete this task?");
         setConfirmVariant("danger");
@@ -171,16 +181,18 @@ export default function TaskPage() {
                     <h1 className="text-2xl font-bold text-gray-800">
                         Task Management
                     </h1>
-                    <Button
-                        variant="primary"
-                        onClick={() => {
-                            setCurrentTask(null);
-                            setIsModalOpen(true);
-                        }}
-                    >
-                        <PlusCircleIcon className="h-5 w-5 text-white" /> Create
-                        New Task
-                    </Button>
+                    <PermissionGuard user={user} permission="create:task">
+                        <Button
+                            variant="primary"
+                            onClick={() => {
+                                setCurrentTask(null);
+                                setIsModalOpen(true);
+                            }}
+                        >
+                            <PlusCircleIcon className="h-5 w-5 text-white" />{" "}
+                            Create New Task
+                        </Button>
+                    </PermissionGuard>
                 </div>
 
                 {error && (
@@ -236,33 +248,33 @@ export default function TaskPage() {
                         </div>
                     </div>
                 </div>
-
                 <div className="space-y-4">
                     {tasks.length > 0 ? (
-                        tasks.map((task) => (
-                            <TaskCard
-                                key={task.Id}
-                                task={task}
-                                onEdit={() => {
-                                    setCurrentTask(task);
-                                    setIsModalOpen(true);
-                                }}
-                                onDelete={() => handleDeleteTask(task.Id)}
-                                members={members}
-                            />
-                        ))
+                        <PermissionGuard user={user} permission="view:task">
+                            {tasks.map((task) => (
+                                <TaskCard
+                                    key={task.Id}
+                                    task={task}
+                                    onEdit={() => {
+                                        setCurrentTask(task);
+                                        setIsModalOpen(true);
+                                    }}
+                                    onDelete={() => handleDeleteTask(task.Id)}
+                                    members={members}
+                                />
+                            ))}
+                            <div className="mt-6">
+                                <Pagination
+                                    pagination={pagination}
+                                    setPagination={setPagination}
+                                />
+                            </div>
+                        </PermissionGuard>
                     ) : (
                         <div className="p-6 text-center text-gray-500 bg-white rounded-lg border border-gray-200">
                             No tasks found
                         </div>
                     )}
-                </div>
-
-                <div className="mt-6">
-                    <Pagination
-                        pagination={pagination}
-                        setPagination={setPagination}
-                    />
                 </div>
             </div>
 

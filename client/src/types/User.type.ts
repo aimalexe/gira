@@ -1,10 +1,12 @@
+import { Permission } from "./Permission.type";
+
 export interface User {
     Id: string;
     name?: string;
     email?: string;
     role: {
-        name: string
+        name: string;
+        Id: string;
+        permissions: Permission[];
     };
 }
-
-// export type UserWithUnderscoreId = Omit<User, 'id'> & { _id: string };

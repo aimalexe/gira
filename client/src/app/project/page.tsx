@@ -16,6 +16,8 @@ import ProjectForm from "@/components/ProjectForm";
 import { FormikHelpers } from "formik";
 import { FolderPlusIcon } from "@heroicons/react/20/solid";
 import { ConfirmModal } from "@/components/ConfirmModal";
+import { checkPermission } from "@/utils/permissions.util";
+import PermissionGuard from "@/components/PermissionGuard";
 
 export default function ProjectsPage() {
     const { user } = useAuthStore();
@@ -37,18 +39,15 @@ export default function ProjectsPage() {
 
     useEffect(() => {
         if (user) {
-            if (user.role.name === "admin") {
-                fetchProjects();
-                fetchUsers();
-            } else if (user.role.name === "user") {
-                fetchProjects();
-            }
+            fetchProjects();
+            fetchUsers();
         } else {
             router.push("/login");
         }
     }, [user, router]);
 
     const fetchProjects = async () => {
+        if (!checkPermission(user, "view:project")) return;
         try {
             const response = await api.get("/project");
             setProjects(response.data.data || []);
@@ -59,6 +58,7 @@ export default function ProjectsPage() {
     };
 
     const fetchUsers = async () => {
+        if (!checkPermission(user, "view:user")) return;
         try {
             const response = await api.get("/user", { params: { limit: 100 } });
             setUsers(
@@ -76,7 +76,7 @@ export default function ProjectsPage() {
         values: { name: string; description: string; members: string[] },
         { setSubmitting, resetForm }: FormikHelpers<any>
     ) => {
-        if (user?.role.name !== "admin") return;
+        if (!checkPermission(user, "create:project")) return;
         try {
             await api.post("/project", values);
             resetForm();
@@ -93,7 +93,7 @@ export default function ProjectsPage() {
         values: { name?: string; description?: string; members?: string[] },
         { setSubmitting }: FormikHelpers<any>
     ) => {
-        if (!currentProject || user?.role.name !== "admin") return;
+        if (!currentProject || !checkPermission(user, "update:project")) return;
         try {
             if (values.members && values.members.length > 0)
                 delete values.members;
@@ -109,7 +109,7 @@ export default function ProjectsPage() {
     };
 
     const handleDeleteProject = async (projectId: string) => {
-        if (user?.role.name !== "admin") return;
+        if (!checkPermission(user, "delete:project")) return;
         setConfirmTitle("Delete Project");
         setConfirmMessage("Are you sure you want to delete this project?");
         setConfirmVariant("danger");
@@ -127,7 +127,7 @@ export default function ProjectsPage() {
     };
 
     const handleAddMember = async (projectId: string, memberId: string) => {
-        if (user?.role.name !== "admin") return;
+        if (!checkPermission(user, "add:member")) return;
         setConfirmTitle("Add Team Member");
         setConfirmMessage("Are you sure you want to add this user?");
         setConfirmVariant("success");
@@ -149,7 +149,7 @@ export default function ProjectsPage() {
     };
 
     const handleRemoveMember = async (projectId: string, memberId: string) => {
-        if (user?.role.name !== "admin") return;
+        if (!checkPermission(user, "remove:member")) return;
         setConfirmTitle("Remove Team Member");
         setConfirmMessage("Are you sure you want to remove this user?");
         setConfirmVariant("danger");
@@ -181,7 +181,7 @@ export default function ProjectsPage() {
                     <h1 className="text-2xl font-bold text-gray-800">
                         Project Management
                     </h1>
-                    {user.role.name === "admin" && (
+                    <PermissionGuard user={user} permission="create:project">
                         <Button
                             variant="primary"
                             onClick={() => {
@@ -192,7 +192,7 @@ export default function ProjectsPage() {
                             <FolderPlusIcon className="h-5 w-5 text-white" />{" "}
                             Create New Project
                         </Button>
-                    )}
+                    </PermissionGuard>
                 </div>
 
                 {error && (
@@ -200,34 +200,37 @@ export default function ProjectsPage() {
                         {error}
                     </div>
                 )}
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {projects.length > 0 ? (
-                        projects.map((project) => (
-                            <ProjectCard
-                                key={project.Id}
-                                project={project}
-                                onEdit={() => {
-                                    setCurrentProject(project);
-                                    setIsModalOpen(true);
-                                }}
-                                onDelete={() => handleDeleteProject(project.Id)}
-                                onAddMember={(memberId) =>
-                                    handleAddMember(project.Id, memberId)
-                                }
-                                onRemoveMember={(memberId) =>
-                                    handleRemoveMember(project.Id, memberId)
-                                }
-                                users={users}
-                                currentUser={user}
-                            />
-                        ))
-                    ) : (
-                        <div className="col-span-full p-6 text-center text-gray-500 bg-white rounded-lg border border-gray-200">
-                            No projects found
-                        </div>
-                    )}
-                </div>
+                <PermissionGuard user={user} permission="view:project">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {projects.length > 0 ? (
+                            projects.map((project) => (
+                                <ProjectCard
+                                    key={project.Id}
+                                    project={project}
+                                    onEdit={() => {
+                                        setCurrentProject(project);
+                                        setIsModalOpen(true);
+                                    }}
+                                    onDelete={() =>
+                                        handleDeleteProject(project.Id)
+                                    }
+                                    onAddMember={(memberId) =>
+                                        handleAddMember(project.Id, memberId)
+                                    }
+                                    onRemoveMember={(memberId) =>
+                                        handleRemoveMember(project.Id, memberId)
+                                    }
+                                    users={users}
+                                    currentUser={user}
+                                />
+                            ))
+                        ) : (
+                            <div className="col-span-full p-6 text-center text-gray-500 bg-white rounded-lg border border-gray-200">
+                                No projects found
+                            </div>
+                        )}
+                    </div>
+                </PermissionGuard>
             </div>
 
             {/* Project Form Modal */}

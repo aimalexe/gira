@@ -3,17 +3,18 @@
 import { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import Select from "react-select";
 import { Button } from "@/components/Button";
+import { groupPermissions } from "@/utils/permissions.util";
+import { Permission } from "@/types/Permission.type";
 
 interface RoleFormProps {
     role?: {
         Id?: string;
         name: string;
         description?: string;
-        permissions: any[];
+        permissions: Permission[];
     };
-    permissions: { Id: string; name: string; description?: string }[];
+    permissions: Permission[];
     onSubmit: (data: {
         name: string;
         description: string;
@@ -26,18 +27,19 @@ export default function RoleForm({
     permissions,
     onSubmit,
 }: RoleFormProps) {
+    const groupedPermissions = groupPermissions(permissions);
     const formik = useFormik({
         initialValues: {
             name: role?.name || "",
             description: role?.description || "",
-            permissions: role?.permissions?.map((p: any) => p._id) || [],
+            permissions: role?.permissions?.map((p: Permission) => p.Id) || [],
         },
         validationSchema: Yup.object({
             name: Yup.string()
                 .required("Role name is required")
                 .min(3, "Role name must be at least 3 characters"),
-            description: Yup.string(),
-            permissions: Yup.array().of(Yup.string()).min(1),
+            description: Yup.string().max(255).required(),
+            permissions: Yup.array().of(Yup.string()).min(1, "At least one permission should be granted "),
         }),
         onSubmit: (values) => {
             onSubmit(values);
@@ -48,15 +50,10 @@ export default function RoleForm({
         if (role?.permissions) {
             formik.setFieldValue(
                 "permissions",
-                role.permissions.map((p: any) => p.Id)
+                role.permissions.map((p: Permission) => p.Id)
             );
         }
     }, [role]);
-
-    const permissionOptions = permissions.map((perm) => ({
-        value: perm.Id,
-        label: perm.name,
-    }));
 
     return (
         <form onSubmit={formik.handleSubmit} className="space-y-4">
@@ -110,41 +107,59 @@ export default function RoleForm({
                 <label className="block text-sm font-medium mb-2">
                     Assign Permissions
                 </label>
-                <div className="space-y-2 overflow-y-auto max-h-40">
-                    {permissionOptions.map((option) => (
-                        <label
-                            key={option.value}
-                            className="flex items-center space-x-2"
-                        >
-                            <input
-                                type="checkbox"
-                                name="permissions"
-                                value={option.value}
-                                checked={formik.values.permissions.includes(
-                                    option.value
-                                )}
-                                onChange={(e) => {
-                                    if (e.target.checked) {
-                                        formik.setFieldValue("permissions", [
-                                            ...formik.values.permissions,
-                                            option.value,
-                                        ]);
-                                    } else {
-                                        formik.setFieldValue(
-                                            "permissions",
-                                            formik.values.permissions.filter(
-                                                (p) => p !== option.value
-                                            )
-                                        );
-                                    }
-                                }}
-                                onBlur={() =>
-                                    formik.setFieldTouched("permissions", true)
-                                }
-                                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            />
-                            <span className="text-sm">{option.label}</span>
-                        </label>
+                <div className="space-y-4 overflow-y-auto max-h-60 p-2 border rounded grid grid-cols-2 md:grid-cols-3">
+                    {Object.keys(groupedPermissions).map((module) => (
+                        <div key={module}>
+                            <p className="font-semibold text-sm mb-1 capitalize">
+                                {module}
+                            </p>
+                            <div className="space-y-1 pl-4">
+                                {groupedPermissions[module].map((perm) => (
+                                    <label
+                                        key={perm.Id}
+                                        className="flex items-center space-x-2"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            name="permissions"
+                                            value={perm.Id}
+                                            checked={formik.values.permissions.includes(
+                                                perm.Id
+                                            )}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    formik.setFieldValue(
+                                                        "permissions",
+                                                        [
+                                                            ...formik.values
+                                                                .permissions,
+                                                            perm.Id,
+                                                        ]
+                                                    );
+                                                } else {
+                                                    formik.setFieldValue(
+                                                        "permissions",
+                                                        formik.values.permissions.filter(
+                                                            (p) => p !== perm.Id
+                                                        )
+                                                    );
+                                                }
+                                            }}
+                                            onBlur={() =>
+                                                formik.setFieldTouched(
+                                                    "permissions",
+                                                    true
+                                                )
+                                            }
+                                            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                        />
+                                        <span className="text-sm">
+                                            {perm.name}
+                                        </span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
                     ))}
                 </div>
                 {formik.touched.permissions && formik.errors.permissions && (

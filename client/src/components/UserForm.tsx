@@ -1,16 +1,17 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { Button } from "@/components/Button";
+import api from "@/lib/api";
+import { Role } from "@/types/Role.type";
 
 interface UserFormProps {
     initialValues: {
         name: string;
         email: string;
         password: string;
-        role: {
-            name: string
-        };
+        role?: string;
     };
     validationSchema: any;
     onSubmit: (values: any, actions: any) => void;
@@ -25,8 +26,34 @@ export default function UserForm({
     isSubmitting,
     isCreate,
 }: UserFormProps) {
+    const [roles, setRoles] = useState<Role[]>([]);
+
+    useEffect(() => {
+        const fetchRoles = async () => {
+            try {
+                const res = await api.get("/role");
+                const rolesData = res.data?.roles || [];
+
+                setRoles(
+                    rolesData
+                        .map(
+                            (r: any): Role => ({
+                                Id: r.Id,
+                                name: r.name,
+                            })
+                        )
+                        .filter((r: Role) => r.name.toLowerCase() !== "admin")
+                );
+            } catch (err) {
+                console.error("Failed to fetch roles:", err);
+            }
+        };
+        fetchRoles();
+    }, []);
+
     return (
         <Formik
+            enableReinitialize
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={onSubmit}
@@ -34,6 +61,7 @@ export default function UserForm({
             {() => (
                 <Form className="space-y-4">
                     <div className="grid grid-cols-1 gap-4">
+                        {/* Name */}
                         <div>
                             <label
                                 htmlFor="name"
@@ -54,6 +82,8 @@ export default function UserForm({
                                 className="text-red-500 text-xs mt-1"
                             />
                         </div>
+
+                        {/* Email */}
                         <div>
                             <label
                                 htmlFor="email"
@@ -74,6 +104,8 @@ export default function UserForm({
                                 className="text-red-500 text-xs mt-1"
                             />
                         </div>
+
+                        {/* Password */}
                         <div>
                             <label
                                 htmlFor="password"
@@ -99,7 +131,9 @@ export default function UserForm({
                                 </p>
                             )}
                         </div>
-                        {isCreate && (<div>
+
+                        {/* Role */}
+                        <div>
                             <label
                                 htmlFor="role"
                                 className="block text-sm font-medium text-gray-700 mb-1"
@@ -112,20 +146,26 @@ export default function UserForm({
                                 name="role"
                                 className="w-full px-3 py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all duration-200"
                             >
-                                <option value="user">User</option>
-                                <option value="admin">Admin</option>
+                                <option value="">Select role</option>
+                                {roles.map((role) => (
+                                    <option key={role.Id} value={role.Id}>
+                                        {role.name}
+                                    </option>
+                                ))}
                             </Field>
                             <ErrorMessage
                                 name="role"
                                 component="p"
                                 className="text-red-500 text-xs mt-1"
                             />
-                        </div>)}
+                        </div>
                     </div>
+
+                    {/* Submit */}
                     <div className="flex justify-end pt-4">
                         <Button
                             type="submit"
-                            variant={isCreate ? "primary" : "primary"}
+                            variant="primary"
                             isLoading={isSubmitting}
                             className="w-full sm:w-auto"
                         >

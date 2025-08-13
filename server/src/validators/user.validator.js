@@ -1,6 +1,5 @@
 const Joi = require('joi');
 const { email, password, objectId } = require('./reusable.validator');
-const ROLES = require("../constants/roles.const");
 
 const name = Joi.string().trim().min(2).max(50);
 const role = objectId;

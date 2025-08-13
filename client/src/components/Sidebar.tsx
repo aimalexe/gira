@@ -2,6 +2,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useAuthStore } from "@/lib/auth";
 import { ConfirmModal } from "./ConfirmModal";
+import PermissionGuard from "./PermissionGuard";
 
 interface SidebarProps {
     isOpen: boolean;
@@ -102,9 +103,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     {user && (
                         <div className="mt-10 mb-8">
                             <span className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">
-                                Hello,{" "}
-                                {user.role.name.charAt(0).toUpperCase() +
-                                    user.role.name.slice(1)}
+                                Hello, {user.name}
                             </span>
                         </div>
                     )}
@@ -113,36 +112,40 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     <div className="flex-1 space-y-3">
                         {user ? (
                             <>
-                                {user.role.name === "admin" && (
-                                    <>
-                                        <NavLink
-                                            href="/user"
-                                            onClick={closeSidebar}
-                                        >
-                                            Users
-                                        </NavLink>
-                                        <NavLink
-                                            href="/project"
-                                            onClick={closeSidebar}
-                                        >
-                                            Projects
-                                        </NavLink>
-                                        <NavLink
-                                            href="/role"
-                                            onClick={closeSidebar}
-                                        >
-                                            Roles
-                                        </NavLink>
-                                    </>
-                                )}
-                                {user.role.name !== "admin" && (
+                                <PermissionGuard
+                                    user={user}
+                                    permission="view:user"
+                                    mode="disable"
+                                >
+                                    <NavLink
+                                        href="/user"
+                                        onClick={closeSidebar}
+                                    >
+                                        Users
+                                    </NavLink>
+                                </PermissionGuard>
+                                <PermissionGuard
+                                    user={user}
+                                    permission="view:project"
+                                >
                                     <NavLink
                                         href="/project"
                                         onClick={closeSidebar}
                                     >
                                         Projects
                                     </NavLink>
-                                )}
+                                </PermissionGuard>
+                                <PermissionGuard
+                                    user={user}
+                                    permission="view:role"
+                                >
+                                    <NavLink
+                                        href="/role"
+                                        onClick={closeSidebar}
+                                    >
+                                        Roles
+                                    </NavLink>
+                                </PermissionGuard>
                             </>
                         ) : (
                             <NavLink href="/login" onClick={closeSidebar}>

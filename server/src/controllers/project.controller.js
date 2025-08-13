@@ -26,7 +26,7 @@ const createProject = async (req, res) => {
 };
 
 const getAllProjects = async (req, res) => {
-    const query = req.user.role.name === 'admin'
+    const query = req.user.role.permissions.some(p => p.name === "view:project")
         ? { $or: [{ created_by: req.user._id }, { members: req.user._id }] }
         : { members: req.user._id };
 

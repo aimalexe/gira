@@ -4,13 +4,11 @@ import { Task } from "@/types/Task.type";
 import { User } from "@/types/User.type";
 import { Menu, Transition } from "@headlessui/react";
 import { Fragment } from "react";
-import {
-    PencilIcon,
-    TrashIcon,
-} from "@heroicons/react/20/solid";
+import { PencilIcon, TrashIcon } from "@heroicons/react/20/solid";
 import Avatar from "@/components/Avatar";
 import { statusColors } from "@/constants/statusColors.const";
 import { useAuthStore } from "@/lib/auth";
+import PermissionGuard from "./PermissionGuard";
 
 interface TaskCardProps {
     task: Task;
@@ -25,7 +23,6 @@ export default function TaskCard({
     onDelete,
     members,
 }: TaskCardProps) {
-    console.log("🚀 ~ TaskCard ~ task:", task.dueDate)
     const assignedUser = members.find((m) => m.Id === task.assignedTo?.Id);
     const statusColor =
         statusColors[task.status] || "bg-gray-200 text-gray-800";
@@ -122,22 +119,30 @@ export default function TaskCard({
                         >
                             <Menu.Items className="absolute top-[-5] right-[25] z-10 mt-2 w-40 md:w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                 <div className="py-1">
-                                    <Menu.Item>
-                                        {({ active }) => (
-                                            <button
-                                                onClick={onEdit}
-                                                className={`${
-                                                    active
-                                                        ? "bg-gray-100 text-gray-900"
-                                                        : "text-gray-700"
-                                                } flex items-center w-full px-4 py-2 text-sm`}
-                                            >
-                                                <PencilIcon className="h-4 w-4 mr-2" />
-                                                Edit Task
-                                            </button>
-                                        )}
-                                    </Menu.Item>
-                                    {user?.role.name === "admin" &&(
+                                    <PermissionGuard
+                                        user={user as User}
+                                        permission="update:task"
+                                    >
+                                        <Menu.Item>
+                                            {({ active }) => (
+                                                <button
+                                                    onClick={onEdit}
+                                                    className={`${
+                                                        active
+                                                            ? "bg-gray-100 text-gray-900"
+                                                            : "text-gray-700"
+                                                    } flex items-center w-full px-4 py-2 text-sm`}
+                                                >
+                                                    <PencilIcon className="h-4 w-4 mr-2" />
+                                                    Edit Task
+                                                </button>
+                                            )}
+                                        </Menu.Item>
+                                    </PermissionGuard>
+                                    <PermissionGuard
+                                        user={user as User}
+                                        permission="delete:task"
+                                    >
                                         <Menu.Item>
                                             {({ active }) => (
                                                 <button
@@ -153,7 +158,7 @@ export default function TaskCard({
                                                 </button>
                                             )}
                                         </Menu.Item>
-                                    )}
+                                    </PermissionGuard>
                                 </div>
                             </Menu.Items>
                         </Transition>

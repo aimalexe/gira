@@ -32,7 +32,11 @@ router.get(
 
 router.put(
     '/:id',
-    [authorize({ roles: ["admin"] }), isValidId, validateAndSanitize(validateUpdateRole)],
+    [
+        authorize({ roles: ["admin"] }),
+        isValidId,
+        validateAndSanitize(validateUpdateRole)
+    ],
     asyncHandler(roleController.updateRole)
 );
 

@@ -11,6 +11,9 @@ import {
     ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/20/solid";
 import Avatar from "@/components/Avatar";
+import PermissionGuard from "./PermissionGuard";
+import { useAuthStore } from "@/lib/auth";
+import { checkPermission } from "@/utils/permissions.util";
 
 interface ProjectCardProps {
     project: Project;
@@ -31,6 +34,7 @@ export default function ProjectCard({
     users,
     currentUser,
 }: ProjectCardProps) {
+    const { user } = useAuthStore();
     const params = new URLSearchParams({
         projectId: project.Id,
         members: JSON.stringify(
@@ -42,47 +46,51 @@ export default function ProjectCard({
         <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
             <div className="flex-col p-3 md:p-6">
                 <div className="flex justify-between items-start">
-                    <Link
-                        href={`/project/task?${params.toString()}`}
-                        className="flex items-center justify-center gap-2 group"
-                    >
-                        <h3 className="text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
-                            {project.name}&nbsp;
-                            <ArrowTopRightOnSquareIcon className="inline-block h-5 w-5 text-gray-800 group-hover:text-blue-600 transition-colors" />
-                        </h3>
-                    </Link>
-
-                    {currentUser.role.name === "admin" && (
-                        <Menu
-                            as="div"
-                            className="relative inline-block text-left"
+                    {checkPermission(user, "view:task", false) ? (
+                        <Link
+                            href={`/project/task?${params.toString()}`}
+                            className="flex items-center justify-center gap-2 group"
                         >
-                            <div>
-                                <Menu.Button className="inline-flex justify-center w-8 h-8 rounded-full items-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none">
-                                    <span className="sr-only">
-                                        Open options
-                                    </span>
-                                    <svg
-                                        className="w-5 h-5"
-                                        fill="currentColor"
-                                        viewBox="0 0 20 20"
-                                    >
-                                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                                    </svg>
-                                </Menu.Button>
-                            </div>
+                            <h3 className="text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
+                                {project.name}&nbsp;
+                                <ArrowTopRightOnSquareIcon className="inline-block h-5 w-5 text-gray-800 group-hover:text-blue-600 transition-colors" />
+                            </h3>
+                        </Link>
+                    ) : (
+                        <h3 className="text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
+                            {project.name}
+                        </h3>
+                    )}
 
-                            <Transition
-                                as={Fragment}
-                                enter="transition ease-out duration-100"
-                                enterFrom="transform opacity-0 scale-95"
-                                enterTo="transform opacity-100 scale-100"
-                                leave="transition ease-in duration-75"
-                                leaveFrom="transform opacity-100 scale-100"
-                                leaveTo="transform opacity-0 scale-95"
-                            >
-                                <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                    <div className="py-1">
+                    <Menu as="div" className="relative inline-block text-left">
+                        <div>
+                            <Menu.Button className="inline-flex justify-center w-8 h-8 rounded-full items-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none">
+                                <span className="sr-only">Open options</span>
+                                <svg
+                                    className="w-5 h-5"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                >
+                                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                </svg>
+                            </Menu.Button>
+                        </div>
+
+                        <Transition
+                            as={Fragment}
+                            enter="transition ease-out duration-100"
+                            enterFrom="transform opacity-0 scale-95"
+                            enterTo="transform opacity-100 scale-100"
+                            leave="transition ease-in duration-75"
+                            leaveFrom="transform opacity-100 scale-100"
+                            leaveTo="transform opacity-0 scale-95"
+                        >
+                            <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                <div className="py-1">
+                                    <PermissionGuard
+                                        user={user as User}
+                                        permission="update:project"
+                                    >
                                         <Menu.Item>
                                             {({ active }) => (
                                                 <button
@@ -97,6 +105,11 @@ export default function ProjectCard({
                                                 </button>
                                             )}
                                         </Menu.Item>
+                                    </PermissionGuard>
+                                    <PermissionGuard
+                                        user={user as User}
+                                        permission="delete:project"
+                                    >
                                         <Menu.Item>
                                             {({ active }) => (
                                                 <button
@@ -111,11 +124,11 @@ export default function ProjectCard({
                                                 </button>
                                             )}
                                         </Menu.Item>
-                                    </div>
-                                </Menu.Items>
-                            </Transition>
-                        </Menu>
-                    )}
+                                    </PermissionGuard>
+                                </div>
+                            </Menu.Items>
+                        </Transition>
+                    </Menu>
                 </div>
 
                 {project.description && (
@@ -130,8 +143,10 @@ export default function ProjectCard({
                             <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                 Team Members
                             </h4>
-                            {/* <button>+</button> */}
-                            {currentUser.role.name === "admin" && (
+                            <PermissionGuard
+                                user={user as User}
+                                permission="add:member"
+                            >
                                 <Menu as="div" className="relative">
                                     <Menu.Button
                                         title="Add Team Member"
@@ -197,7 +212,7 @@ export default function ProjectCard({
                                         </Menu.Items>
                                     </Transition>
                                 </Menu>
-                            )}
+                            </PermissionGuard>
                         </div>
                         <div className="flex flex-wrap gap-2">
                             {project.members?.map((member) => (
@@ -209,7 +224,10 @@ export default function ProjectCard({
                                     <span className="text-sm text-gray-700">
                                         {member.name}
                                     </span>
-                                    {currentUser.role.name === "admin" && (
+                                    <PermissionGuard
+                                        user={user as User}
+                                        permission="remove:member"
+                                    >
                                         <button
                                             onClick={() =>
                                                 onRemoveMember(member.Id)
@@ -219,7 +237,7 @@ export default function ProjectCard({
                                         >
                                             <UserMinusIcon className="h-4 w-4" />
                                         </button>
-                                    )}
+                                    </PermissionGuard>
                                 </div>
                             ))}
                         </div>

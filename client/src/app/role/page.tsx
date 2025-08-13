@@ -12,10 +12,18 @@ import {
 import api from "@/lib/api";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import RoleForm from "@/components/RoleForm";
+import { Permission } from "@/types/Permission.type";
+import { checkPermission } from "@/utils/permissions.util";
+import { useAuthStore } from "@/lib/auth";
+import { useRouter } from "next/navigation";
+import PermissionGuard from "@/components/PermissionGuard";
+import { User } from "@/types/User.type";
 
 export default function RolesPage() {
+    const { user } = useAuthStore();
+    const router = useRouter();
     const [roles, setRoles] = useState<any[]>([]);
-    const [permissions, setPermissions] = useState<any[]>([]);
+    const [permissions, setPermissions] = useState<Permission[]>([]);
     const [error, setError] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingRole, setEditingRole] = useState<any | null>(null);
@@ -25,11 +33,16 @@ export default function RolesPage() {
     const [confirmMessage, setConfirmMessage] = useState("");
 
     useEffect(() => {
-        fetchRoles();
-        fetchPermissions();
-    }, []);
+        if (user) {
+            fetchRoles();
+            fetchPermissions();
+        } else {
+            router.push("/login");
+        }
+    }, [user, router]);
 
     const fetchRoles = async () => {
+        if (!checkPermission(user, "view:role")) return;
         try {
             const res = await api.get("/role");
             setRoles(res.data.roles);
@@ -42,7 +55,15 @@ export default function RolesPage() {
     const fetchPermissions = async () => {
         try {
             const res = await api.get("/permission");
-            setPermissions(res.data.permissions || []);
+            const permissionsData = res.data?.permissions || [];
+            setPermissions(
+                permissionsData.map(
+                    (p: any): Permission => ({
+                        Id: p.Id,
+                        name: p.name,
+                    })
+                )
+            );
         } catch (err: any) {
             setError(
                 err.response?.data?.message || "Failed to fetch permissions"
@@ -62,6 +83,7 @@ export default function RolesPage() {
     };
 
     const handleCreateRole = async (values: any) => {
+        if (!checkPermission(user, "create:role")) return;
         try {
             await api.post("/role", values);
             setIsModalOpen(false);
@@ -72,6 +94,7 @@ export default function RolesPage() {
     };
 
     const handleUpdateRole = async (values: any) => {
+        if (!checkPermission(user, "update:role")) return;
         try {
             await api.put(`/role/${editingRole.Id}`, values);
             setIsModalOpen(false);
@@ -83,6 +106,7 @@ export default function RolesPage() {
     };
 
     const handleDeleteRole = (roleId: string) => {
+        if (!checkPermission(user, "delete:role")) return;
         setConfirmTitle("Delete Role");
         setConfirmMessage("Are you sure you want to delete this role?");
         setConfirmAction(() => async () => {
@@ -104,9 +128,14 @@ export default function RolesPage() {
             <div className="bg-white/80 rounded-xl p-6">
                 <div className="flex justify-between items-center flex-wrap mb-8">
                     <h1 className="text-2xl font-bold">Role Management</h1>
-                    <Button onClick={openCreateModal}>
-                        <PlusIcon className="h-5 w-5 text-white" /> New Role
-                    </Button>
+                    <PermissionGuard
+                        user={user as User}
+                        permission="create:role"
+                    >
+                        <Button onClick={openCreateModal}>
+                            <PlusIcon className="h-5 w-5 text-white" /> New Role
+                        </Button>
+                    </PermissionGuard>
                 </div>
 
                 {error && (
@@ -115,65 +144,80 @@ export default function RolesPage() {
                     </div>
                 )}
 
-                <Table headers={["Name", "Permissions", "Actions"]}>
-                    {roles.length > 0 ? (
-                        roles.map((role) => (
-                            <TableRow key={role._id}>
-                                <TableCell>{role.name}</TableCell>
-                                <TableCell>
-                                    {role.permissions
-                                        ?.slice(0, 3)
-                                        .map((p: any) => (
-                                            <span
-                                                key={p.Id}
-                                                className="mr-2 px-2 py-1 bg-gray-200 rounded-full text-xs"
-                                            >
-                                                {p.name}
-                                            </span>
-                                        ))}
-                                    {role.permissions?.length > 3 && (
-                                        <span className="text-gray-500 text-xs">
-                                            +{role.permissions.length - 3} more
-                                        </span>
-                                    )}
-                                </TableCell>
-
-                                {role.name !== "admin" && (
+                <PermissionGuard user={user as User} permission="view:role">
+                    <Table headers={["Name", "Permissions", "Actions"]}>
+                        {roles.length > 0 ? (
+                            roles.map((role) => (
+                                <TableRow key={role.Id}>
+                                    <TableCell>{role.name}</TableCell>
                                     <TableCell>
-                                        <div className="flex space-x-2">
-                                            <Button
-                                                onClick={() =>
-                                                    openEditModal(role)
-                                                }
-                                            >
-                                                <PencilSquareIcon className="h-5 w-5 text-white" />{" "}
-                                                Edit
-                                            </Button>
-                                            <Button
-                                                variant="danger"
-                                                onClick={() =>
-                                                    handleDeleteRole(role.Id)
-                                                }
-                                            >
-                                                <TrashIcon className="h-5 w-5 text-white" />{" "}
-                                                Delete
-                                            </Button>
-                                        </div>
+                                        {role.permissions
+                                            ?.slice(0, 3)
+                                            .map((p: any) => (
+                                                <span
+                                                    key={p.Id}
+                                                    className="mr-2 px-2 py-1 bg-gray-200 rounded-full text-xs"
+                                                >
+                                                    {p.name}
+                                                </span>
+                                            ))}
+                                        {role.permissions?.length > 3 && (
+                                            <span className="text-gray-500 text-xs">
+                                                +{role.permissions.length - 3}{" "}
+                                                more
+                                            </span>
+                                        )}
                                     </TableCell>
-                                )}
+
+                                    {role.name !== "admin" && (
+                                        <TableCell>
+                                            <div className="flex space-x-2">
+                                                <PermissionGuard
+                                                    user={user as User}
+                                                    permission="update:role"
+                                                >
+                                                    <Button
+                                                        onClick={() =>
+                                                            openEditModal(role)
+                                                        }
+                                                    >
+                                                        <PencilSquareIcon className="h-5 w-5 text-white" />{" "}
+                                                        Edit
+                                                    </Button>
+                                                </PermissionGuard>
+                                                <PermissionGuard
+                                                    user={user as User}
+                                                    permission="delete:role"
+                                                >
+                                                    <Button
+                                                        variant="danger"
+                                                        onClick={() =>
+                                                            handleDeleteRole(
+                                                                role.Id
+                                                            )
+                                                        }
+                                                    >
+                                                        <TrashIcon className="h-5 w-5 text-white" />{" "}
+                                                        Delete
+                                                    </Button>
+                                                </PermissionGuard>
+                                            </div>
+                                        </TableCell>
+                                    )}
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={3}
+                                    className="text-center text-gray-500"
+                                >
+                                    No roles found
+                                </TableCell>
                             </TableRow>
-                        ))
-                    ) : (
-                        <TableRow>
-                            <TableCell
-                                colSpan={3}
-                                className="text-center text-gray-500"
-                            >
-                                No roles found
-                            </TableCell>
-                        </TableRow>
-                    )}
-                </Table>
+                        )}
+                    </Table>
+                </PermissionGuard>
             </div>
 
             <Modal
