@@ -62,73 +62,80 @@ export default function ProjectCard({
                         </h3>
                     )}
 
-                    <Menu as="div" className="relative inline-block text-left">
-                        <div>
-                            <Menu.Button className="inline-flex justify-center w-8 h-8 rounded-full items-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none">
-                                <span className="sr-only">Open options</span>
-                                <svg
-                                    className="w-5 h-5"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                >
-                                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                                </svg>
-                            </Menu.Button>
-                        </div>
-
-                        <Transition
-                            as={Fragment}
-                            enter="transition ease-out duration-100"
-                            enterFrom="transform opacity-0 scale-95"
-                            enterTo="transform opacity-100 scale-100"
-                            leave="transition ease-in duration-75"
-                            leaveFrom="transform opacity-100 scale-100"
-                            leaveTo="transform opacity-0 scale-95"
+                    {(checkPermission(user, "update:project", false) ||
+                        checkPermission(user, "delete:project", false)) && (
+                        <Menu
+                            as="div"
+                            className="relative inline-block text-left"
                         >
-                            <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                <div className="py-1">
-                                    <PermissionGuard
-                                        user={user as User}
-                                        permission="update:project"
+                            <div>
+                                <Menu.Button className="inline-flex justify-center w-8 h-8 rounded-full items-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none">
+                                    <span className="sr-only">
+                                        Open options
+                                    </span>
+                                    <svg
+                                        className="w-5 h-5"
+                                        fill="currentColor"
+                                        viewBox="0 0 20 20"
                                     >
-                                        <Menu.Item>
-                                            {({ active }) => (
-                                                <button
-                                                    onClick={onEdit}
-                                                    className={`${
-                                                        active
-                                                            ? "bg-gray-100 text-gray-900"
-                                                            : "text-gray-700"
-                                                    } block w-full px-4 py-2 text-left text-sm`}
-                                                >
-                                                    Edit Project
-                                                </button>
-                                            )}
-                                        </Menu.Item>
-                                    </PermissionGuard>
-                                    <PermissionGuard
-                                        user={user as User}
-                                        permission="delete:project"
-                                    >
-                                        <Menu.Item>
-                                            {({ active }) => (
-                                                <button
-                                                    onClick={onDelete}
-                                                    className={`${
-                                                        active
-                                                            ? "bg-gray-100 text-red-600"
-                                                            : "text-red-600"
-                                                    } block w-full px-4 py-2 text-left text-sm`}
-                                                >
-                                                    Delete Project
-                                                </button>
-                                            )}
-                                        </Menu.Item>
-                                    </PermissionGuard>
-                                </div>
-                            </Menu.Items>
-                        </Transition>
-                    </Menu>
+                                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                    </svg>
+                                </Menu.Button>
+                            </div>
+                            <Transition
+                                as={Fragment}
+                                enter="transition ease-out duration-100"
+                                enterFrom="transform opacity-0 scale-95"
+                                enterTo="transform opacity-100 scale-100"
+                                leave="transition ease-in duration-75"
+                                leaveFrom="transform opacity-100 scale-100"
+                                leaveTo="transform opacity-0 scale-95"
+                            >
+                                <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                    <div className="py-1">
+                                        <PermissionGuard
+                                            user={user as User}
+                                            permission="update:project"
+                                        >
+                                            <Menu.Item>
+                                                {({ active }) => (
+                                                    <button
+                                                        onClick={onEdit}
+                                                        className={`${
+                                                            active
+                                                                ? "bg-gray-100 text-gray-900"
+                                                                : "text-gray-700"
+                                                        } block w-full px-4 py-2 text-left text-sm`}
+                                                    >
+                                                        Edit Project
+                                                    </button>
+                                                )}
+                                            </Menu.Item>
+                                        </PermissionGuard>
+                                        <PermissionGuard
+                                            user={user as User}
+                                            permission="delete:project"
+                                        >
+                                            <Menu.Item>
+                                                {({ active }) => (
+                                                    <button
+                                                        onClick={onDelete}
+                                                        className={`${
+                                                            active
+                                                                ? "bg-gray-100 text-red-600"
+                                                                : "text-red-600"
+                                                        } block w-full px-4 py-2 text-left text-sm`}
+                                                    >
+                                                        Delete Project
+                                                    </button>
+                                                )}
+                                            </Menu.Item>
+                                        </PermissionGuard>
+                                    </div>
+                                </Menu.Items>
+                            </Transition>
+                        </Menu>
+                    )}
                 </div>
 
                 {project.description && (

@@ -165,7 +165,11 @@ const updateTask = async (req, res) => {
     const isTaskCreator = task.created_by.toString() === req.user._id.toString();
     const isAssigned = task.assigned_to.toString() === req.user._id.toString();
     const isProjectCreator = project.created_by.toString() === req.user._id.toString();
-    if (req.user.role !== "admin" && !isProjectCreator && !isTaskCreator && !isAssigned) {
+    const isProjectMember = project.members?.some(
+        memberId => memberId.toString() === req.user._id.toString()
+    );
+
+    if (req.user.role.name !== "admin" && !isProjectCreator && !isTaskCreator && !isAssigned && !isProjectMember) {
         return res.status(403).json({ status: "error", message: "Access denied" });
     }
 

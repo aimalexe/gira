@@ -57,7 +57,7 @@ const authorize = ({ roles = [], permissions = [] } = {}) => {
             
             if (permissions.length) {
                 const userPermissions = user.role.permissions.map(p => p.name);
-                const hasPermission = permissions.every(p => userPermissions.includes(p));
+                const hasPermission = permissions.some(p => userPermissions.includes(p));
                 if (!hasPermission) {
                     return res.status(403).json({
                         success: false,

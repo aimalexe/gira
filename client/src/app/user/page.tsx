@@ -60,7 +60,6 @@ export default function UsersPage() {
             const response = await api.get("/user", {
                 params: { page: pagination.pageNo, limit: pagination.limit },
             });
-            console.log("🚀 ~ fetchUsers ~ response:", response);
             setUsers(response.data.users);
             setPagination(response.data.pagination);
             setError("");
@@ -184,36 +183,43 @@ export default function UsersPage() {
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex space-x-2">
-                                            <PermissionGuard
-                                                user={currentUser}
-                                                permission="update:user"
-                                            >
-                                                <Button
-                                                    variant="primary"
-                                                    onClick={() =>
-                                                        setEditingUser(user)
-                                                    }
-                                                >
-                                                    <PencilSquareIcon className="h-5 w-5 text-white" />{" "}
-                                                    Edit
-                                                </Button>
-                                            </PermissionGuard>
-                                            <PermissionGuard
-                                                user={currentUser}
-                                                permission="delete:user"
-                                            >
-                                                <Button
-                                                    variant="danger"
-                                                    onClick={() =>
-                                                        handleDeleteUser(
-                                                            user.Id
-                                                        )
-                                                    }
-                                                >
-                                                    <TrashIcon className="h-5 w-5 text-white" />{" "}
-                                                    Delete
-                                                </Button>
-                                            </PermissionGuard>
+                                            {user.role.name.toLowerCase() !==
+                                                "admin" && (
+                                                <>
+                                                    <PermissionGuard
+                                                        user={currentUser}
+                                                        permission="update:user"
+                                                    >
+                                                        <Button
+                                                            variant="primary"
+                                                            onClick={() =>
+                                                                setEditingUser(
+                                                                    user
+                                                                )
+                                                            }
+                                                        >
+                                                            <PencilSquareIcon className="h-5 w-5 text-white" />{" "}
+                                                            Edit
+                                                        </Button>
+                                                    </PermissionGuard>
+                                                    <PermissionGuard
+                                                        user={currentUser}
+                                                        permission="delete:user"
+                                                    >
+                                                        <Button
+                                                            variant="danger"
+                                                            onClick={() =>
+                                                                handleDeleteUser(
+                                                                    user.Id
+                                                                )
+                                                            }
+                                                        >
+                                                            <TrashIcon className="h-5 w-5 text-white" />{" "}
+                                                            Delete
+                                                        </Button>
+                                                    </PermissionGuard>
+                                                </>
+                                            )}
                                         </div>
                                     </TableCell>
                                 </TableRow>

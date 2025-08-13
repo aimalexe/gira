@@ -20,7 +20,7 @@ router.post(
 
 router.get(
     '/',
-    [authorize({ roles: ["admin"] })],
+    [authorize({ permissions: ["view:role", "create:user"] })],
     asyncHandler(roleController.getAllRoles)
 );
 
