@@ -39,19 +39,18 @@ export const useAuthStore = create<AuthState>((set) => ({
     login: async (email, password) => {
         try {
             const response = await api.post('/auth/login', { email, password });
-            const user: User = { id: response.data.data.id, role: response.data.data.role };
+            const user: User = { Id: response.data.data.id, role: response.data.data.role, name:response.data.data.name };
             if (typeof window !== 'undefined' && window.localStorage) {
                 localStorage.setItem('user', JSON.stringify(user));
             }
             set({ user });
         } catch (e) {
             console.error('Login failed:', e);
-            // Optionally, clear the user on failed login
             if (typeof window !== 'undefined' && window.localStorage) {
                 localStorage.removeItem('user');
             }
             set({ user: null });
-            throw e; // Re-throw the error for the caller to handle
+            throw e;
         }
     },
     
@@ -61,7 +60,6 @@ export const useAuthStore = create<AuthState>((set) => ({
         } catch (e) {
             console.error('Logout failed on server:', e);
         } finally {
-            // Always clear the user from the state and local storage
             if (typeof window !== 'undefined' && window.localStorage) {
                 localStorage.removeItem('user');
             }
@@ -74,7 +72,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
         try {
             const response = await api.get('/auth/me');
-            const user: User = { id: response.data.data.id, role: response.data.data.role };
+            const user: User = { Id: response.data.data.id, role: response.data.data.role };
             if (window.localStorage) {
                 localStorage.setItem('user', JSON.stringify(user));
             }

@@ -1,0 +1,399 @@
+[
+  {
+    "_id": {
+      "$oid": "689475c17136c0b7f9d85be2"
+    },
+    "title": "Task 1",
+    "description": "Some thing to do",
+    "status": "In Progress",
+    "assigned_to": {
+      "$oid": "6891b6f390cac82cd483d436"
+    },
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "due_date": {
+      "$date": "2025-08-11T00:00:00Z"
+    },
+    "file_attachment": "",
+    "project": {
+      "$oid": "689467be7136c0b7f9d85b58"
+    },
+    "createdAt": {
+      "$date": "2025-08-07T09:45:37.741Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-07T09:45:37.741Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "68949460d1a6fdc2074e4ccf"
+    },
+    "title": "Task 1",
+    "description": "This is a to do like the one we have.",
+    "status": "Done",
+    "assigned_to": {
+      "$oid": "689493ffd1a6fdc2074e4ca6"
+    },
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "due_date": {
+      "$date": "2025-08-10T00:00:00Z"
+    },
+    "file_attachment": "",
+    "project": {
+      "$oid": "6894943dd1a6fdc2074e4cbe"
+    },
+    "createdAt": {
+      "$date": "2025-08-07T11:56:16.448Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-08T13:19:15.437Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "68949480d1a6fdc2074e4ce0"
+    },
+    "title": "Task 2",
+    "description": "Some task for the 2nd is",
+    "status": "Done",
+    "assigned_to": {
+      "$oid": "6894941fd1a6fdc2074e4cad"
+    },
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "due_date": {
+      "$date": "2025-08-12T00:00:00Z"
+    },
+    "file_attachment": {
+      "filename": "file_attachment-1754657679224-352707985.pdf",
+      "path": "uploads\\file_attachment-1754657679224-352707985.pdf",
+      "size": 489752,
+      "mimetype": "application/pdf"
+    },
+    "project": {
+      "$oid": "6894943dd1a6fdc2074e4cbe"
+    },
+    "createdAt": {
+      "$date": "2025-08-07T11:56:48.019Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-08T12:54:39.248Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6894952ed1a6fdc2074e4d2c"
+    },
+    "title": "P2 - Task 1",
+    "description": "I am creating this task as that it refers to....",
+    "status": "In Progress",
+    "assigned_to": {
+      "$oid": "689494c7d1a6fdc2074e4d03"
+    },
+    "created_by": {
+      "$oid": "689493e3d1a6fdc2074e4c9f"
+    },
+    "updated_by": {
+      "$oid": "689493e3d1a6fdc2074e4c9f"
+    },
+    "due_date": {
+      "$date": "2025-08-14T00:00:00Z"
+    },
+    "file_attachment": "",
+    "project": {
+      "$oid": "689494fdd1a6fdc2074e4d1b"
+    },
+    "createdAt": {
+      "$date": "2025-08-07T11:59:42.845Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-07T11:59:42.845Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6895dccc0d95679711b6e697"
+    },
+    "title": "Task 1",
+    "description": "First of all add a boilerplate",
+    "status": "To Do",
+    "assigned_to": {
+      "$oid": "6895dc740d95679711b6e66e"
+    },
+    "created_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "updated_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "due_date": {
+      "$date": "2025-08-13T00:00:00Z"
+    },
+    "file_attachment": {
+      "filename": "file_attachment-1754652943456-612011630.png",
+      "path": "uploads\\file_attachment-1754652943456-612011630.png",
+      "size": 101599,
+      "mimetype": "image/png"
+    },
+    "project": {
+      "$oid": "6895dca40d95679711b6e686"
+    },
+    "createdAt": {
+      "$date": "2025-08-08T11:17:32.694Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-11T11:31:42.292Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6895dcf20d95679711b6e6a8"
+    },
+    "title": "Task 2",
+    "description": "You need to do research on selecting our project problem",
+    "status": "Blocked",
+    "assigned_to": {
+      "$oid": "6895dc8d0d95679711b6e675"
+    },
+    "created_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "updated_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "due_date": {
+      "$date": "2025-08-13T00:00:00Z"
+    },
+    "file_attachment": null,
+    "project": {
+      "$oid": "6895dca40d95679711b6e686"
+    },
+    "createdAt": {
+      "$date": "2025-08-08T11:18:10.962Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-11T11:31:56.583Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6895de865874b8c79813961b"
+    },
+    "title": "Collect Research Papers",
+    "description": "Access web portals and teacher and collect",
+    "status": "In Progress",
+    "assigned_to": {
+      "$oid": "6895dc8d0d95679711b6e675"
+    },
+    "created_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "updated_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "due_date": {
+      "$date": "2025-08-17T00:00:00Z"
+    },
+    "file_attachment": null,
+    "project": {
+      "$oid": "6895dca40d95679711b6e686"
+    },
+    "createdAt": {
+      "$date": "2025-08-08T11:24:54.757Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T05:26:16.755Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6899da6959d1eba9fdbacc8b"
+    },
+    "title": "Make a Logo",
+    "description": "Create a logo as in the file attached",
+    "status": "To Do",
+    "assigned_to": {
+      "$oid": "6895dc740d95679711b6e66e"
+    },
+    "created_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "updated_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "due_date": {
+      "$date": "2025-08-17T00:00:00Z"
+    },
+    "file_attachment": {
+      "filename": "file_attachment-1754913385502-468809702.png",
+      "path": "uploads\\file_attachment-1754913385502-468809702.png",
+      "size": 1930,
+      "mimetype": "image/png"
+    },
+    "project": {
+      "$oid": "68998d08148a4dfa5cf78f8b"
+    },
+    "createdAt": {
+      "$date": "2025-08-11T11:56:25.528Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-11T11:56:25.528Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6899eb0759d1eba9fdbacd61"
+    },
+    "title": "First task",
+    "description": "asdfasdfasdf as;dfkljas;dfjkas;lkdjf ;askdf ;laksd f",
+    "status": "In Progress",
+    "assigned_to": {
+      "$oid": "6895dc740d95679711b6e66e"
+    },
+    "created_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "updated_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "due_date": {
+      "$date": "2025-08-21T00:00:00Z"
+    },
+    "file_attachment": {
+      "filename": "file_attachment-1754917639071-605449700.jpeg",
+      "path": "uploads\\file_attachment-1754917639071-605449700.jpeg",
+      "size": 24456,
+      "mimetype": "image/jpeg"
+    },
+    "project": {
+      "$oid": "6899ea5259d1eba9fdbacd4d"
+    },
+    "createdAt": {
+      "$date": "2025-08-11T13:07:19.115Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-11T13:07:19.115Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6899eb2759d1eba9fdbacd72"
+    },
+    "title": "first task",
+    "description": "asdfasdkflasdljf;a lskdjf;aslkdjf ;askjdf ;alskjd f",
+    "status": "In Progress",
+    "assigned_to": {
+      "$oid": "6895dc740d95679711b6e66e"
+    },
+    "created_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "updated_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "due_date": {
+      "$date": "2025-08-12T00:00:00Z"
+    },
+    "file_attachment": null,
+    "project": {
+      "$oid": "6899ea5259d1eba9fdbacd4d"
+    },
+    "createdAt": {
+      "$date": "2025-08-11T13:07:51.448Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-11T13:29:52.690Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6899f1d059d1eba9fdbacdee"
+    },
+    "title": "iosjd asfasdif oiasdf",
+    "description": "sadlkfj asdlkjf asodjfasdijf aksdhf ksdhfkadjs",
+    "status": "To Do",
+    "assigned_to": {
+      "$oid": "6895dc740d95679711b6e66e"
+    },
+    "created_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "updated_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "due_date": {
+      "$date": "2025-08-24T00:00:00Z"
+    },
+    "file_attachment": {
+      "filename": "file_attachment-1754919376075-46105959.jpeg",
+      "path": "uploads\\file_attachment-1754919376075-46105959.jpeg",
+      "size": 24456,
+      "mimetype": "image/jpeg"
+    },
+    "project": {
+      "$oid": "6899ea5259d1eba9fdbacd4d"
+    },
+    "createdAt": {
+      "$date": "2025-08-11T13:36:16.089Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-11T13:39:32.121Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689ad1aa030edf23729b3607"
+    },
+    "title": "title 1",
+    "description": "<script>alert('Hacked!')</script>\r\n<img src=x onerror=alert('oops')>",
+    "status": "To Do",
+    "assigned_to": {
+      "$oid": "6895dc8d0d95679711b6e675"
+    },
+    "created_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "updated_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "due_date": {
+      "$date": "2025-08-13T00:00:00Z"
+    },
+    "file_attachment": null,
+    "project": {
+      "$oid": "6895dca40d95679711b6e686"
+    },
+    "createdAt": {
+      "$date": "2025-08-12T05:31:22.733Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T05:31:22.733Z"
+    },
+    "__v": 0
+  }
+]

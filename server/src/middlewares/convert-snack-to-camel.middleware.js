@@ -22,7 +22,7 @@ function snakeToCamel(obj) {
     }, {});
 }
 
-export const convertSnakeToCamelMiddleware = (
+const convertSnakeToCamelMiddleware = (
     req,
     res,
     next
@@ -46,3 +46,5 @@ export const convertSnakeToCamelMiddleware = (
 
     next();
 };
+
+module.exports = { convertSnakeToCamelMiddleware };

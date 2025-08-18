@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model, Types } = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const userSchema = new Schema({
@@ -22,18 +22,18 @@ const userSchema = new Schema({
         required: [true, 'Password is required'],
         minlength: [6, 'Password must be at least 6 characters'],
     },
-    role: {
-        type: String,
-        enum: ['admin', 'user'],
-        default: 'user',
+    role: { 
+        type: Types.ObjectId,
+        ref: "Role",
+        default: null
     },
     created_by: {
-        type: String,
+        type: Types.ObjectId,
         default: null,
         ref: "User"
     },
     updated_by: {
-        type: String,
+        type: Types.ObjectId,
         default: null,
         ref: "User"
     },

@@ -1,6 +1,6 @@
 const express = require('express');
 const asyncHandler = require('../middlewares/async-handler');
-const { allowRoles, authenticateUser } = require('../middlewares/auth.middleware');
+const { authorize, authenticateUser } = require('../middlewares/auth.middleware');
 const isValidId = require('../middlewares/is-valid-id');
 const validateAndSanitize = require('../middlewares/validate-and-sanitize');
 const {
@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.post(
     '/',
-    [allowRoles('admin'), validateAndSanitize(validateCreateProject)],
+    [authorize({ permissions: ["create:project"] }), validateAndSanitize(validateCreateProject)],
     asyncHandler(projectController.createProject)
 );
 
@@ -32,25 +32,25 @@ router.get(
 
 router.put(
     '/:id',
-    [allowRoles('admin'), isValidId, validateAndSanitize(validateUpdateProject)],
+    [authorize({ permissions: ["update:project"] }), isValidId, validateAndSanitize(validateUpdateProject)],
     asyncHandler(projectController.updateProject)
 );
 
 router.delete(
     '/:id',
-    [allowRoles('admin'), isValidId],
+    [authorize({ permissions: ["delete:project"] }), isValidId],
     asyncHandler(projectController.deleteProject)
 );
 
 router.post(
     '/:id/members',
-    [allowRoles('admin'), isValidId, validateAndSanitize(validateAddRemoveMember)],
+    [authorize({ roles: ["admin"], permissions: ["add:member"] }), isValidId, validateAndSanitize(validateAddRemoveMember)],
     asyncHandler(projectController.addMember)
 );
 
 router.delete(
     '/:id/members',
-    [allowRoles('admin'), isValidId, validateAndSanitize(validateAddRemoveMember)],
+    [authorize({ roles: ["admin"], permissions: ["remove:member"] }), isValidId, validateAndSanitize(validateAddRemoveMember)],
     asyncHandler(projectController.removeMember)
 );
 

@@ -1,0 +1,180 @@
+[
+  {
+    "_id": {
+      "$oid": "689b198d653e6183aa80352d"
+    },
+    "name": "admin",
+    "description": "Can do any thing in the app",
+    "permissions": [
+      {
+        "$oid": "689b17e002a8458465f11eb5"
+      },
+      {
+        "$oid": "689b17cd02a8458465f11eb1"
+      },
+      {
+        "$oid": "689b177a02a8458465f11eaa"
+      },
+      {
+        "$oid": "689b177002a8458465f11ea6"
+      },
+      {
+        "$oid": "689b176302a8458465f11ea2"
+      },
+      {
+        "$oid": "689b175502a8458465f11e9e"
+      },
+      {
+        "$oid": "689b173102a8458465f11e9a"
+      },
+      {
+        "$oid": "689b172902a8458465f11e94"
+      },
+      {
+        "$oid": "689b172102a8458465f11e90"
+      },
+      {
+        "$oid": "689b170f02a8458465f11e8c"
+      },
+      {
+        "$oid": "689af365bd2e0a457a65831c"
+      },
+      {
+        "$oid": "689af02a701543d7b05fcfd2"
+      },
+      {
+        "$oid": "689af01b701543d7b05fcfcf"
+      },
+      {
+        "$oid": "689c3d7e91e838fbc3447cd2"
+      },
+      {
+        "$oid": "689c3d9291e838fbc3447cdb"
+      },
+      {
+        "$oid": "689c3da691e838fbc3447ce4"
+      },
+      {
+        "$oid": "689c3db291e838fbc3447ced"
+      }
+    ],
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-12T10:38:05.695Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-13T07:30:46.741Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689b1fae5dec4578718b89ae"
+    },
+    "name": "user",
+    "description": "user who can do use the app",
+    "permissions": [
+      {
+        "$oid": "689b176302a8458465f11ea2"
+      },
+      {
+        "$oid": "689aef95701543d7b05fcfcc"
+      },
+      {
+        "$oid": "689af01b701543d7b05fcfcf"
+      },
+      {
+        "$oid": "689af02a701543d7b05fcfd2"
+      },
+      {
+        "$oid": "689af365bd2e0a457a65831c"
+      },
+      {
+        "$oid": "689b170f02a8458465f11e8c"
+      }
+    ],
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-12T11:04:14.837Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T12:11:00.071Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689b2fd9dd68687a615eddf6"
+    },
+    "name": "new Role",
+    "description": "sdl;f sd;lf s;ldf",
+    "permissions": [
+      {
+        "$oid": "689af365bd2e0a457a65831c"
+      },
+      {
+        "$oid": "689af01b701543d7b05fcfcf"
+      },
+      {
+        "$oid": "689b175502a8458465f11e9e"
+      },
+      {
+        "$oid": "689b17cd02a8458465f11eb1"
+      }
+    ],
+    "created_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "updated_by": {
+      "$oid": "6891b6e890cac82cd483d432"
+    },
+    "createdAt": {
+      "$date": "2025-08-12T12:13:13.133Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-12T12:13:13.133Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "689c33ad9262e0820ca0fa92"
+    },
+    "name": "Viewer",
+    "description": "only can view project task and users",
+    "permissions": [
+      {
+        "$oid": "689b170f02a8458465f11e8c"
+      },
+      {
+        "$oid": "689af365bd2e0a457a65831c"
+      },
+      {
+        "$oid": "689b176302a8458465f11ea2"
+      }
+    ],
+    "created_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "updated_by": {
+      "$oid": "6895dbfa0d95679711b6e655"
+    },
+    "createdAt": {
+      "$date": "2025-08-13T06:41:49.379Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-13T06:41:49.379Z"
+    },
+    "__v": 0
+  }
+]

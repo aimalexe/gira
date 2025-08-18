@@ -18,6 +18,9 @@ import Pagination from "@/components/Pagination";
 import { FormikHelpers } from "formik";
 import { PlusCircleIcon } from "@heroicons/react/20/solid";
 import { ConfirmModal } from "@/components/ConfirmModal";
+import { checkPermission } from "@/utils/permissions.util";
+import PermissionGuard from "@/components/PermissionGuard";
+import { useTimedError } from "@/hooks/useTimedError";
 
 export default function TaskPage() {
     const { user } = useAuthStore();
@@ -41,7 +44,7 @@ export default function TaskPage() {
         assignedTo: "",
         status: "",
     });
-    const [error, setError] = useState("");
+    const [error, showError] = useTimedError(5000);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentTask, setCurrentTask] = useState<Task | null>(null);
     const [confirmOpen, setConfirmOpen] = useState(false);
@@ -61,6 +64,8 @@ export default function TaskPage() {
     }, [user, projectId, pagination.pageNo, filters, router]);
 
     const fetchTasks = async () => {
+        if (!checkPermission(user, "view:task")) return;
+
         try {
             const params = {
                 page: pagination.pageNo,
@@ -78,9 +83,11 @@ export default function TaskPage() {
                 limit: response.data.pagination.limit ?? 10,
                 itemsPerPage: 10,
             });
-            setError("");
         } catch (err: any) {
-            setError(err.response?.data?.message || "Failed to fetch tasks");
+            if (typeof showError === "function")
+                showError(
+                    err.response?.data?.message || "Failed to fetch tasks"
+                );
         }
     };
 
@@ -88,6 +95,8 @@ export default function TaskPage() {
         values: any,
         { setSubmitting, resetForm }: FormikHelpers<any>
     ) => {
+        if (!checkPermission(user, "create:task")) return;
+
         try {
             const formData = new FormData();
             formData.append("title", values.title);
@@ -107,10 +116,12 @@ export default function TaskPage() {
             });
             resetForm();
             fetchTasks();
-            setError("");
             setIsModalOpen(false);
         } catch (err: any) {
-            setError(err.response?.data?.message || "Failed to create task");
+            if (typeof showError === "function")
+                showError(
+                    err.response?.data?.message || "Failed to create task"
+                );
             setSubmitting(false);
         }
     };
@@ -119,6 +130,8 @@ export default function TaskPage() {
         values: any,
         { setSubmitting }: FormikHelpers<any>
     ) => {
+        if (!checkPermission(user, "update:task")) return;
+
         try {
             const formData = new FormData();
             formData.append("title", values.title);
@@ -135,15 +148,19 @@ export default function TaskPage() {
             });
             setCurrentTask(null);
             fetchTasks();
-            setError("");
             setIsModalOpen(false);
         } catch (err: any) {
-            setError(err.response?.data?.message || "Failed to update task");
+            if (typeof showError === "function")
+                showError(
+                    err.response?.data?.message || "Failed to update task"
+                );
             setSubmitting(false);
         }
     };
 
     const handleDeleteTask = async (taskId: string) => {
+        if (!checkPermission(user, "delete:task")) return;
+
         setConfirmTitle("Delete Task");
         setConfirmMessage("Are you sure you want to delete this task?");
         setConfirmVariant("danger");
@@ -152,9 +169,10 @@ export default function TaskPage() {
                 await api.delete(`/task/${projectId}/${taskId}`);
                 fetchTasks();
             } catch (err: any) {
-                setError(
-                    err.response?.data?.message || "Failed to delete task"
-                );
+                if (typeof showError === "function")
+                    showError(
+                        err.response?.data?.message || "Failed to delete task"
+                    );
             }
         });
         setConfirmOpen(true);
@@ -171,21 +189,23 @@ export default function TaskPage() {
                     <h1 className="text-2xl font-bold text-gray-800">
                         Task Management
                     </h1>
-                    <Button
-                        variant="primary"
-                        onClick={() => {
-                            setCurrentTask(null);
-                            setIsModalOpen(true);
-                        }}
-                    >
-                        <PlusCircleIcon className="h-5 w-5 text-white" /> Create
-                        New Task
-                    </Button>
+                    <PermissionGuard user={user} permission="create:task">
+                        <Button
+                            variant="primary"
+                            onClick={() => {
+                                setCurrentTask(null);
+                                setIsModalOpen(true);
+                            }}
+                        >
+                            <PlusCircleIcon className="h-5 w-5 text-white" />{" "}
+                            Create New Task
+                        </Button>
+                    </PermissionGuard>
                 </div>
 
                 {error && (
                     <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
-                        {error}
+                        {typeof error === "string" && error}
                     </div>
                 )}
 
@@ -236,33 +256,33 @@ export default function TaskPage() {
                         </div>
                     </div>
                 </div>
-
                 <div className="space-y-4">
                     {tasks.length > 0 ? (
-                        tasks.map((task) => (
-                            <TaskCard
-                                key={task.Id}
-                                task={task}
-                                onEdit={() => {
-                                    setCurrentTask(task);
-                                    setIsModalOpen(true);
-                                }}
-                                onDelete={() => handleDeleteTask(task.Id)}
-                                members={members}
-                            />
-                        ))
+                        <PermissionGuard user={user} permission="view:task">
+                            {tasks.map((task) => (
+                                <TaskCard
+                                    key={task.Id}
+                                    task={task}
+                                    onEdit={() => {
+                                        setCurrentTask(task);
+                                        setIsModalOpen(true);
+                                    }}
+                                    onDelete={() => handleDeleteTask(task.Id)}
+                                    members={members}
+                                />
+                            ))}
+                            <div className="mt-6">
+                                <Pagination
+                                    pagination={pagination}
+                                    setPagination={setPagination}
+                                />
+                            </div>
+                        </PermissionGuard>
                     ) : (
                         <div className="p-6 text-center text-gray-500 bg-white rounded-lg border border-gray-200">
                             No tasks found
                         </div>
                     )}
-                </div>
-
-                <div className="mt-6">
-                    <Pagination
-                        pagination={pagination}
-                        setPagination={setPagination}
-                    />
                 </div>
             </div>
 

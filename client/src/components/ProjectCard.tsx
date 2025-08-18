@@ -11,6 +11,9 @@ import {
     ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/20/solid";
 import Avatar from "@/components/Avatar";
+import PermissionGuard from "./PermissionGuard";
+import { useAuthStore } from "@/lib/auth";
+import { checkPermission } from "@/utils/permissions.util";
 
 interface ProjectCardProps {
     project: Project;
@@ -31,6 +34,7 @@ export default function ProjectCard({
     users,
     currentUser,
 }: ProjectCardProps) {
+    const { user } = useAuthStore();
     const params = new URLSearchParams({
         projectId: project.Id,
         members: JSON.stringify(
@@ -42,17 +46,24 @@ export default function ProjectCard({
         <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
             <div className="flex-col p-3 md:p-6">
                 <div className="flex justify-between items-start">
-                    <Link
-                        href={`/project/task?${params.toString()}`}
-                        className="flex items-center justify-center gap-2 group"
-                    >
+                    {checkPermission(user, "view:task", false) ? (
+                        <Link
+                            href={`/project/task?${params.toString()}`}
+                            className="flex items-center justify-center gap-2 group"
+                        >
+                            <h3 className="text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
+                                {project.name}&nbsp;
+                                <ArrowTopRightOnSquareIcon className="inline-block h-5 w-5 text-gray-800 group-hover:text-blue-600 transition-colors" />
+                            </h3>
+                        </Link>
+                    ) : (
                         <h3 className="text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
-                            {project.name}&nbsp;
-                            <ArrowTopRightOnSquareIcon className="inline-block h-5 w-5 text-gray-800 group-hover:text-blue-600 transition-colors" />
+                            {project.name}
                         </h3>
-                    </Link>
+                    )}
 
-                    {currentUser.role === "admin" && (
+                    {(checkPermission(user, "update:project", false) ||
+                        checkPermission(user, "delete:project", false)) && (
                         <Menu
                             as="div"
                             className="relative inline-block text-left"
@@ -71,7 +82,6 @@ export default function ProjectCard({
                                     </svg>
                                 </Menu.Button>
                             </div>
-
                             <Transition
                                 as={Fragment}
                                 enter="transition ease-out duration-100"
@@ -83,34 +93,44 @@ export default function ProjectCard({
                             >
                                 <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                     <div className="py-1">
-                                        <Menu.Item>
-                                            {({ active }) => (
-                                                <button
-                                                    onClick={onEdit}
-                                                    className={`${
-                                                        active
-                                                            ? "bg-gray-100 text-gray-900"
-                                                            : "text-gray-700"
-                                                    } block w-full px-4 py-2 text-left text-sm`}
-                                                >
-                                                    Edit Project
-                                                </button>
-                                            )}
-                                        </Menu.Item>
-                                        <Menu.Item>
-                                            {({ active }) => (
-                                                <button
-                                                    onClick={onDelete}
-                                                    className={`${
-                                                        active
-                                                            ? "bg-gray-100 text-red-600"
-                                                            : "text-red-600"
-                                                    } block w-full px-4 py-2 text-left text-sm`}
-                                                >
-                                                    Delete Project
-                                                </button>
-                                            )}
-                                        </Menu.Item>
+                                        <PermissionGuard
+                                            user={user as User}
+                                            permission="update:project"
+                                        >
+                                            <Menu.Item>
+                                                {({ active }) => (
+                                                    <button
+                                                        onClick={onEdit}
+                                                        className={`${
+                                                            active
+                                                                ? "bg-gray-100 text-gray-900"
+                                                                : "text-gray-700"
+                                                        } block w-full px-4 py-2 text-left text-sm`}
+                                                    >
+                                                        Edit Project
+                                                    </button>
+                                                )}
+                                            </Menu.Item>
+                                        </PermissionGuard>
+                                        <PermissionGuard
+                                            user={user as User}
+                                            permission="delete:project"
+                                        >
+                                            <Menu.Item>
+                                                {({ active }) => (
+                                                    <button
+                                                        onClick={onDelete}
+                                                        className={`${
+                                                            active
+                                                                ? "bg-gray-100 text-red-600"
+                                                                : "text-red-600"
+                                                        } block w-full px-4 py-2 text-left text-sm`}
+                                                    >
+                                                        Delete Project
+                                                    </button>
+                                                )}
+                                            </Menu.Item>
+                                        </PermissionGuard>
                                     </div>
                                 </Menu.Items>
                             </Transition>
@@ -124,107 +144,107 @@ export default function ProjectCard({
                     </p>
                 )}
 
-                {project.members && project.members.length > 0 && (
-                    <div className="mt-4">
-                        <div className="flex justify-between items-center border-b border-gray-200 mb-2">
-                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                Team Members
-                            </h4>
-                            {/* <button>+</button> */}
-                            {currentUser.role === "admin" && (
-                                <Menu as="div" className="relative">
-                                    <Menu.Button
-                                        title="Add Team Member"
-                                        className="rounded-md bg-gray-50 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-blue-100"
-                                    >
-                                        <UserPlusIcon className="h-4 w-4 text-gray-500" />
-                                    </Menu.Button>
-                                    <Transition
-                                        as={Fragment}
-                                        enter="transition ease-out duration-100"
-                                        enterFrom="transform opacity-0 scale-95"
-                                        enterTo="transform opacity-100 scale-100"
-                                        leave="transition ease-in duration-75"
-                                        leaveFrom="transform opacity-100 scale-100"
-                                        leaveTo="transform opacity-0 scale-95"
-                                    >
-                                        <Menu.Items className="absolute right-0 bottom-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none max-h-60 overflow-auto">
-                                            <div className="py-1">
-                                                {users
-                                                    .filter(
-                                                        (user) =>
-                                                            !project.members?.some(
-                                                                (m) =>
-                                                                    m.Id ===
-                                                                    user.Id
-                                                            )
-                                                    )
-                                                    .map((user) => (
-                                                        <Menu.Item
-                                                            key={user.Id}
-                                                        >
-                                                            {({ active }) => (
-                                                                <button
-                                                                    onClick={() =>
-                                                                        onAddMember(
-                                                                            user.Id
-                                                                        )
-                                                                    }
-                                                                    className={`${
-                                                                        active
-                                                                            ? "bg-gray-100 text-gray-900"
-                                                                            : "text-gray-700"
-                                                                    } block w-full px-4 py-2 text-left text-sm`}
-                                                                >
-                                                                    {user.name}
-                                                                </button>
-                                                            )}
-                                                        </Menu.Item>
-                                                    ))}
-                                                {users.filter(
+                <div className="mt-4">
+                    <div className="flex justify-between items-center border-b border-gray-200 mb-2">
+                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            {project.members &&
+                                project.members.length > 0 &&
+                                "Team Members"}
+                        </h4>
+                        <PermissionGuard
+                            user={user as User}
+                            permission="add:member"
+                        >
+                            <Menu as="div" className="relative">
+                                <Menu.Button
+                                    title="Add Team Member"
+                                    className="rounded-md bg-gray-50 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-blue-100"
+                                >
+                                    <UserPlusIcon className="h-4 w-4 text-gray-500" />
+                                </Menu.Button>
+                                <Transition
+                                    as={Fragment}
+                                    enter="transition ease-out duration-100"
+                                    enterFrom="transform opacity-0 scale-95"
+                                    enterTo="transform opacity-100 scale-100"
+                                    leave="transition ease-in duration-75"
+                                    leaveFrom="transform opacity-100 scale-100"
+                                    leaveTo="transform opacity-0 scale-95"
+                                >
+                                    <Menu.Items className="absolute right-0 bottom-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none max-h-30 overflow-auto">
+                                        <div className="py-1">
+                                            {users
+                                                .filter(
                                                     (user) =>
                                                         !project.members?.some(
                                                             (m) =>
                                                                 m.Id === user.Id
                                                         )
-                                                ).length === 0 && (
-                                                    <div className="px-4 py-2 text-sm text-gray-500">
-                                                        No available users to
-                                                        add
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </Menu.Items>
-                                    </Transition>
-                                </Menu>
-                            )}
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                            {project.members?.map((member) => (
-                                <div
-                                    key={member.Id}
-                                    className="flex items-center space-x-2 bg-gray-50 px-3 py-1 rounded-full"
-                                >
-                                    <Avatar name={member.name} size="sm" />
-                                    <span className="text-sm text-gray-700">
-                                        {member.name}
-                                    </span>
-                                    {currentUser.role === "admin" && (
-                                        <button
-                                            onClick={() =>
-                                                onRemoveMember(member.Id)
-                                            }
-                                            className="text-gray-400 hover:text-red-500"
-                                            title="Remove member"
-                                        >
-                                            <UserMinusIcon className="h-4 w-4" />
-                                        </button>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
+                                                )
+                                                .map((user) => (
+                                                    <Menu.Item key={user.Id}>
+                                                        {({ active }) => (
+                                                            <button
+                                                                onClick={() =>
+                                                                    onAddMember(
+                                                                        user.Id
+                                                                    )
+                                                                }
+                                                                className={`${
+                                                                    active
+                                                                        ? "bg-gray-100 text-gray-900"
+                                                                        : "text-gray-700"
+                                                                } block w-full px-4 py-2 text-left text-sm`}
+                                                            >
+                                                                {user.name}
+                                                            </button>
+                                                        )}
+                                                    </Menu.Item>
+                                                ))}
+                                            {users.filter(
+                                                (user) =>
+                                                    !project.members?.some(
+                                                        (m) => m.Id === user.Id
+                                                    )
+                                            ).length === 0 && (
+                                                <div className="px-4 py-2 text-sm text-gray-500">
+                                                    No available users to add
+                                                </div>
+                                            )}
+                                        </div>
+                                    </Menu.Items>
+                                </Transition>
+                            </Menu>
+                        </PermissionGuard>
                     </div>
-                )}
+                    <div className="flex flex-wrap gap-2">
+                        {project.members?.map((member) => (
+                            <div
+                                key={member.Id}
+                                className="flex items-center space-x-2 bg-gray-50 px-3 py-1 rounded-full"
+                            >
+                                <Avatar name={member.name} size="sm" />
+                                <span className="text-sm text-gray-700">
+                                    {member.name}
+                                </span>
+                                <PermissionGuard
+                                    user={user as User}
+                                    permission="remove:member"
+                                >
+                                    <button
+                                        onClick={() =>
+                                            onRemoveMember(member.Id)
+                                        }
+                                        className="text-gray-400 hover:text-red-500"
+                                        title="Remove member"
+                                    >
+                                        <UserMinusIcon className="h-4 w-4" />
+                                    </button>
+                                </PermissionGuard>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
     );

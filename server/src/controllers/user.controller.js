@@ -1,14 +1,21 @@
 const User = require('../models/User.model');
+const Role = require("../models/Role.model");
 
 const createUser = async (req, res, next) => {
     try {
-        const exist = await User.findOne({ email: req.validatedData.email });
-        if (exist) {
+        const emailExists = await User.findOne({ email: req.validatedData.email });
+        if (emailExists) {
             return res.status(409).json({
                 status: 'error',
                 message: 'Email not available. Already in use'
             });
         }
+
+        const roleExists = await Role.findOne({ _id: req.validatedData.role })
+        if (!roleExists) return res.status(404).json({
+            status: 'error',
+            message: 'Role doesn\'t exists'
+        })
 
         const user = new User({ ...req.validatedData, created_by: req?.user._id ?? null, updated_by: req?.user._id ?? null });
         await user.save();
@@ -30,15 +37,32 @@ const createUser = async (req, res, next) => {
 const getAllUsers = async (req, res, next) => {
     try {
         const { name, email, role, pageNo = 1, itemsPerPage = 20 } = req.validatedQuery || req.query;
-        const query = { created_by: req.user._id };
+
+        /* // Direct children
+        const level1Ids = [req.user._id];
+
+        // Children of logged-in user
+        const level2Users = await User.find({ created_by: req.user._id }, { _id: 1 }).lean();
+        const level2Ids = level2Users.map(u => u._id);
+
+        // Children of those children
+        const level3Users = await User.find({ created_by: { $in: level2Ids } }, { _id: 1 }).lean();
+        const level3Ids = level3Users.map(u => u._id);
+
+        const allowedIds = [...level1Ids, ...level2Ids, ...level3Ids];
+        const query = { _id: { $in: allowedIds } }; */
+        
+        const query = {};
         if (name) query.name = { $regex: name, $options: 'i' };
         if (email) query.email = { $regex: email, $options: 'i' };
         if (role) query.role = Array.isArray(role) ? { $in: role } : role;
 
         const users = await User.find(query)
+            .populate("role", "name")
             .select('-password')
             .skip((pageNo - 1) * itemsPerPage)
             .limit(parseInt(itemsPerPage));
+
         const total = await User.countDocuments(query);
 
         return res.status(200).json({
@@ -47,8 +71,8 @@ const getAllUsers = async (req, res, next) => {
             users,
             pagination: {
                 total,
-                pageNo,
-                itemsPerPage
+                pageNo: Number(pageNo),
+                itemsPerPage: Number(itemsPerPage)
             }
         });
     } catch (error) {
@@ -56,9 +80,10 @@ const getAllUsers = async (req, res, next) => {
     }
 };
 
+
 const getUserById = async (req, res, next) => {
     try {
-        const user = await User.findById(req.params.id).select('-password');
+        const user = await User.findById(req.params.id).select('-password').populate("role", "name");
         if (!user) {
             return res.status(404).json({
                 status: 'error',
@@ -79,12 +104,6 @@ const getUserById = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
     try {
         const id = req.params.id;
-        if (req.user.role !== 'admin' && req.user._id.toString() !== id) {
-            return res.status(403).json({
-                status: 'error',
-                message: 'Forbidden: Cannot update other users'
-            });
-        }
 
         const user = await User.findById(id);
         if (!user) {
@@ -94,19 +113,35 @@ const updateUser = async (req, res, next) => {
             });
         }
 
-        const { email, password, ...otherData } = req.validatedData;
+        const { email, password, role, ...otherData } = req.validatedData;
+
         if (email) {
             const isEmailPresent = await User.findOne({ email, _id: { $ne: id } });
-            if (isEmailPresent) return res.status(404).json({
-                status: 'error',
-                message: 'Email already in use'
-            });
+            if (isEmailPresent) {
+                return res.status(400).json({
+                    status: 'error',
+                    message: 'Email already in use'
+                });
+            }
+            user.email = email;
         }
 
-        Object.assign(user, { ...otherData, email, updated_by: req?.user._id ?? null });
+        if (role) {
+            const isRolePresent = await Role.findById(role);
+            if (!isRolePresent) {
+                return res.status(404).json({
+                    status: 'error',
+                    message: 'Role not found'
+                });
+            }
+            user.role = role;
+        }
+
         if (password) {
             user.password = password;
         }
+
+        Object.assign(user, otherData, { updated_by: req?.user._id ?? null });
 
         const updatedUser = await user.save();
         const { password: _, ...userWithoutPassword } = updatedUser.toObject();
@@ -131,22 +166,28 @@ const deleteUser = async (req, res, next) => {
             });
         }
 
-        if (req.user.role !== 'admin' && req.user._id.toString() !== id) {
-            return res.status(403).json({
-                status: 'error',
-                message: 'Forbidden: Cannot delete other users'
-            });
-        }
+        const isSelfDelete = req.user._id.toString() === id;
+        const isAdmin = req.user.role?.name === 'admin';
 
-        const user = await User.findById(id);
-        if (!user) {
+        const targetUser = await User.findById(id);
+        if (!targetUser) {
             return res.status(404).json({
                 status: 'error',
                 message: 'User not found'
             });
         }
 
+        const isCreator = targetUser.created_by?.toString() === req.user._id.toString();
+
+        if (!isAdmin && !isSelfDelete && !isCreator) {
+            return res.status(403).json({
+                status: 'error',
+                message: 'Forbidden: Cannot delete this user'
+            });
+        }
+
         await User.findByIdAndDelete(id);
+
         return res.status(200).json({
             status: 'success',
             message: 'User deleted'
@@ -155,6 +196,7 @@ const deleteUser = async (req, res, next) => {
         next(error);
     }
 };
+
 
 module.exports = {
     createUser,
