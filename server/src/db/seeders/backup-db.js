@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
-import fs from "fs";
-import path from "path";
-import { EJSON } from "bson";
+const mongoose = require("mongoose");
+const fs = require("fs");
+const path = require("path");
+const { EJSON } = require("bson");
 
 // Get CLI args
 const args = process.argv.slice(2);
