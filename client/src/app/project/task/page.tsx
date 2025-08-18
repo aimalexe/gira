@@ -20,6 +20,7 @@ import { PlusCircleIcon } from "@heroicons/react/20/solid";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { checkPermission } from "@/utils/permissions.util";
 import PermissionGuard from "@/components/PermissionGuard";
+import { useTimedError } from "@/hooks/useTimedError";
 
 export default function TaskPage() {
     const { user } = useAuthStore();
@@ -43,7 +44,7 @@ export default function TaskPage() {
         assignedTo: "",
         status: "",
     });
-    const [error, setError] = useState("");
+    const [error, showError] = useTimedError(5000);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentTask, setCurrentTask] = useState<Task | null>(null);
     const [confirmOpen, setConfirmOpen] = useState(false);
@@ -82,9 +83,11 @@ export default function TaskPage() {
                 limit: response.data.pagination.limit ?? 10,
                 itemsPerPage: 10,
             });
-            setError("");
         } catch (err: any) {
-            setError(err.response?.data?.message || "Failed to fetch tasks");
+            if (typeof showError === "function")
+                showError(
+                    err.response?.data?.message || "Failed to fetch tasks"
+                );
         }
     };
 
@@ -113,10 +116,12 @@ export default function TaskPage() {
             });
             resetForm();
             fetchTasks();
-            setError("");
             setIsModalOpen(false);
         } catch (err: any) {
-            setError(err.response?.data?.message || "Failed to create task");
+            if (typeof showError === "function")
+                showError(
+                    err.response?.data?.message || "Failed to create task"
+                );
             setSubmitting(false);
         }
     };
@@ -143,10 +148,12 @@ export default function TaskPage() {
             });
             setCurrentTask(null);
             fetchTasks();
-            setError("");
             setIsModalOpen(false);
         } catch (err: any) {
-            setError(err.response?.data?.message || "Failed to update task");
+            if (typeof showError === "function")
+                showError(
+                    err.response?.data?.message || "Failed to update task"
+                );
             setSubmitting(false);
         }
     };
@@ -162,9 +169,10 @@ export default function TaskPage() {
                 await api.delete(`/task/${projectId}/${taskId}`);
                 fetchTasks();
             } catch (err: any) {
-                setError(
-                    err.response?.data?.message || "Failed to delete task"
-                );
+                if (typeof showError === "function")
+                    showError(
+                        err.response?.data?.message || "Failed to delete task"
+                    );
             }
         });
         setConfirmOpen(true);
@@ -197,7 +205,7 @@ export default function TaskPage() {
 
                 {error && (
                     <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
-                        {error}
+                        {typeof error === "string" && error}
                     </div>
                 )}
 

@@ -38,7 +38,7 @@ const getAllUsers = async (req, res, next) => {
     try {
         const { name, email, role, pageNo = 1, itemsPerPage = 20 } = req.validatedQuery || req.query;
 
-        // Direct children
+        /* // Direct children
         const level1Ids = [req.user._id];
 
         // Children of logged-in user
@@ -50,7 +50,9 @@ const getAllUsers = async (req, res, next) => {
         const level3Ids = level3Users.map(u => u._id);
 
         const allowedIds = [...level1Ids, ...level2Ids, ...level3Ids];
-        const query = { _id: { $in: allowedIds } };
+        const query = { _id: { $in: allowedIds } }; */
+        
+        const query = {};
         if (name) query.name = { $regex: name, $options: 'i' };
         if (email) query.email = { $regex: email, $options: 'i' };
         if (role) query.role = Array.isArray(role) ? { $in: role } : role;
@@ -103,16 +105,6 @@ const updateUser = async (req, res, next) => {
     try {
         const id = req.params.id;
 
-        const isSelfUpdate = req.user._id.toString() === id;
-        const isAdmin = req.user.role?.name === 'admin';
-
-        if (!isAdmin && !isSelfUpdate) {
-            return res.status(403).json({
-                status: 'error',
-                message: 'Forbidden: Cannot update other users'
-            });
-        }
-
         const user = await User.findById(id);
         if (!user) {
             return res.status(404).json({
@@ -135,13 +127,6 @@ const updateUser = async (req, res, next) => {
         }
 
         if (role) {
-            if (!isAdmin) {
-                return res.status(403).json({
-                    status: 'error',
-                    message: 'Forbidden: Only admins can change roles'
-                });
-            }
-
             const isRolePresent = await Role.findById(role);
             if (!isRolePresent) {
                 return res.status(404).json({

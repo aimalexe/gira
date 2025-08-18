@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.post(
     '/',
-    [authorize({ permissions: ["create:user"] })],
+    [authorize({ permissions: ["create:user", "update:role"] })],
     validateAndSanitize(validateCreateUser),
     asyncHandler(userController.createUser)
 );

@@ -12,7 +12,7 @@ const router = express.Router();
 router.post(
     '/',
     [
-        authorize({ roles: ["admin"] }),
+        authorize({ permissions: ["create:role", "create:permission"] }),
         authenticateUser,
         validateAndSanitize(validateCreatePermission),
     ],
@@ -21,25 +21,25 @@ router.post(
 
 router.get(
     '/',
-    [authorize({ roles: ["admin"] })],
+    [authorize({ permissions: ["view:role", "view:permission"] })],
     asyncHandler(permissionController.getAllPermissions)
 );
 
 router.get(
     '/:id',
-    [authorize({ roles: ["admin"] }), isValidId],
+    [authorize({ permissions: ["view:role", "view:permission"] }), isValidId],
     asyncHandler(permissionController.getPermissionById)
 );
 
 router.put(
     '/:id',
-    [authorize({ roles: ["admin"] }), isValidId, validateAndSanitize(validateUpdatePermission)],
+    [authorize({ permissions: ["update:role", "update:permission"] }), isValidId, validateAndSanitize(validateUpdatePermission)],
     asyncHandler(permissionController.updatePermission)
 );
 
 router.delete(
     '/:id',
-    [authorize({ roles: ["admin"] }), isValidId],
+    [authorize({ permissions: ["delete:role", "delete:permission"] }), isValidId],
     asyncHandler(permissionController.deletePermission)
 );
 

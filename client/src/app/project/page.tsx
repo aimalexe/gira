@@ -18,13 +18,14 @@ import { FolderPlusIcon } from "@heroicons/react/20/solid";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { checkPermission } from "@/utils/permissions.util";
 import PermissionGuard from "@/components/PermissionGuard";
+import { useTimedError } from "@/hooks/useTimedError";
 
 export default function ProjectsPage() {
     const { user } = useAuthStore();
     const router = useRouter();
     const [projects, setProjects] = useState<Project[]>([]);
     const [users, setUsers] = useState<{ Id: string; name: string }[]>([]);
-    const [error, setError] = useState("");
+    const [error, showError] = useTimedError(5000);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentProject, setCurrentProject] = useState<Project | null>(null);
 
@@ -51,9 +52,11 @@ export default function ProjectsPage() {
         try {
             const response = await api.get("/project");
             setProjects(response.data.data || []);
-            setError("");
         } catch (err: any) {
-            setError(err.response?.data?.message || "Failed to fetch projects");
+            if (typeof showError === "function")
+                showError(
+                    err.response?.data?.message || "Failed to fetch projects"
+                );
         }
     };
 
@@ -81,10 +84,12 @@ export default function ProjectsPage() {
             await api.post("/project", values);
             resetForm();
             fetchProjects();
-            setError("");
             setIsModalOpen(false);
         } catch (err: any) {
-            setError(err.response?.data?.message || "Failed to create project");
+            if (typeof showError === "function")
+                showError(
+                    err.response?.data?.message || "Failed to create project"
+                );
             setSubmitting(false);
         }
     };
@@ -100,10 +105,12 @@ export default function ProjectsPage() {
             await api.put(`/project/${currentProject.Id}`, values);
             setCurrentProject(null);
             fetchProjects();
-            setError("");
             setIsModalOpen(false);
         } catch (err: any) {
-            setError(err.response?.data?.message || "Failed to update project");
+            if (typeof showError === "function")
+                showError(
+                    err.response?.data?.message || "Failed to update project"
+                );
             setSubmitting(false);
         }
     };
@@ -118,9 +125,11 @@ export default function ProjectsPage() {
                 await api.delete(`/project/${projectId}`);
                 fetchProjects();
             } catch (err: any) {
-                setError(
-                    err.response?.data?.message || "Failed to delete project"
-                );
+                if (typeof showError === "function")
+                    showError(
+                        err.response?.data?.message ||
+                            "Failed to delete project"
+                    );
             }
         });
         setConfirmOpen(true);
@@ -139,9 +148,11 @@ export default function ProjectsPage() {
                     });
                     fetchProjects();
                 } catch (err: any) {
-                    setError(
-                        err.response?.data?.message || "Failed to add member"
-                    );
+                    if (typeof showError === "function")
+                        showError(
+                            err.response?.data?.message ||
+                                "Failed to add member"
+                        );
                 }
             }
         });
@@ -161,9 +172,11 @@ export default function ProjectsPage() {
                     });
                     fetchProjects();
                 } catch (err: any) {
-                    setError(
-                        err.response?.data?.message || "Failed to remove member"
-                    );
+                    if (typeof showError === "function")
+                        showError(
+                            err.response?.data?.message ||
+                                "Failed to remove member"
+                        );
                 }
             }
         });
@@ -197,7 +210,7 @@ export default function ProjectsPage() {
 
                 {error && (
                     <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
-                        {error}
+                        {typeof error === "string" && error}
                     </div>
                 )}
                 <PermissionGuard user={user} permission="view:project">
